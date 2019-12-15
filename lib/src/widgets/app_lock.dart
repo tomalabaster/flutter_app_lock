@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppLock extends StatefulWidget {
-  final Widget Function() child;
+  final Widget Function(Object) child;
   final Widget lockScreen;
 
   const AppLock({
@@ -57,7 +57,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
       navigatorKey: _navigatorKey,
       routes: {
         '/lock-screen': (context) => this.buildLockScreen(),
-        '/unlocked': (context) => this.widget.child()
+        '/unlocked': (context) =>
+            this.widget.child(ModalRoute.of(context).settings.arguments)
       },
     );
   }
@@ -69,17 +70,18 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     );
   }
 
-  void didUnlock() {
+  void didUnlock([Object args]) {
     if (this._didUnlockForAppLaunch) {
       this._didUnlockOnAppPaused();
     } else {
-      this._didUnlockOnAppLaunch();
+      this._didUnlockOnAppLaunch(args);
     }
   }
 
-  void _didUnlockOnAppLaunch() {
+  void _didUnlockOnAppLaunch(Object args) {
     this._didUnlockForAppLaunch = true;
-    _navigatorKey.currentState.pushReplacementNamed('/unlocked');
+    _navigatorKey.currentState
+        .pushReplacementNamed('/unlocked', arguments: args);
   }
 
   void _didUnlockOnAppPaused() {

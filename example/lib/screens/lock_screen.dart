@@ -24,7 +24,7 @@ class _LockScreenState extends State<LockScreen> {
               child: Text('Go'),
               onPressed: () {
                 if (this._textEditingController.text == '0000') {
-                  AppLock.of(context).didUnlock();
+                  AppLock.of(context).didUnlock('some data');
                 }
               },
             )
