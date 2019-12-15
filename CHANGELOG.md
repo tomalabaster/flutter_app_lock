@@ -1,3 +1,9 @@
+## 1.1.0 - 15th Dec 2019
+
+**Breaking change**
+
+An argument can now be passed in to the `AppLock` method `didUnlock` and is accessible through the builder method, `child` - this should be considered a **breaking change** as the builder method, `child` requires a parameter even if null is passed in to `didUnlock`.
+
 ## 1.0.0 - 15th Dec 2019
 
 Initial release
