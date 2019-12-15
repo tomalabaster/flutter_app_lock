@@ -23,13 +23,13 @@ For help getting started with Flutter, view the online documentation.
 ```dart
 void main() {
   runApp(AppLock(
-    child: (args) => MyApp(data: args),
+    builder: (args) => MyApp(data: args),
     lockScreen: LockScreen(),
   ));
 }
 ```
 
-Simply wrap the initialization of `MyApp` (or your equivalent) in a function and pass it to the `child` property of an `AppLock` widget.
+Simply wrap the initialization of `MyApp` (or your equivalent) in a function and pass it to the `builder` property of an `AppLock` widget.
 
 `LockScreen` is your own widget implementing your own login logic which should call the following once a successful login has occured.
 
@@ -51,12 +51,12 @@ var database = await openDatabase(...);
 AppLock.of(context).didUnlock(database);
 ```
 
-This object is then available as part of the `AppLock` builder method, `child`:
+This object is then available as part of the `AppLock` builder method, `builder`:
 
 ```dart
 ...
 runApp(AppLock(
-  child: (args) => MyApp(database: args), // args is the `database` object passed in to `didUnlock`
+  builder: (args) => MyApp(database: args), // args is the `database` object passed in to `didUnlock`
   lockScreen: LockScreen(),
 ));
 ```
