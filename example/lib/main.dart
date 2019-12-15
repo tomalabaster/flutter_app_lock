@@ -6,7 +6,7 @@ import 'screens/lock_screen.dart';
 
 void main() {
   runApp(AppLock(
-    child: (args) => MyApp(
+    builder: (args) => MyApp(
       data: args,
     ),
     lockScreen: LockScreen(),

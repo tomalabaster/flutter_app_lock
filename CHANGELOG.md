@@ -1,3 +1,7 @@
+## 1.1.0+1 - 15th Dec 2019
+
+Deprecating `child` method in preference for the `builder` method - simply a name change.
+
 ## 1.1.0 - 15th Dec 2019
 
 **Breaking change**
