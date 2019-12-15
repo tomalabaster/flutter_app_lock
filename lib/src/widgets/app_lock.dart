@@ -11,12 +11,15 @@ import 'package:flutter/material.dart';
 /// `AppLock.of(context).didUnlock();` with an argument. [Object] can then be injected
 /// in to your `MyApp` widget (or equivalent).
 class AppLock extends StatefulWidget {
+  @Deprecated('Use [builder] instead.')
   final Widget Function(Object) child;
+  final Widget Function(Object) builder;
   final Widget lockScreen;
 
   const AppLock({
     Key key,
-    @required this.child,
+    @Deprecated('Use [builder] instead.') this.child,
+    @required this.builder,
     @required this.lockScreen,
   }) : super(key: key);
 
