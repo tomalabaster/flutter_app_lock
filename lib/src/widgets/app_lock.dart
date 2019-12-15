@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 
+/// A widget which handles app lifecycle events for showing and hiding a lock screen.
+/// This should wrap around a `MyApp` widget (or equivalent).
+///
+/// [lockScreen] is a [Widget] which should be a screen for handling login logic and
+/// calling `AppLock.of(context).didUnlock();` upon a successful login.
+///
+/// [child] is a [Function] taking an [Object] as its argument and should return a
+/// [Widget]. The [Object] argument is provided by the [lockScreen] calling
+/// `AppLock.of(context).didUnlock();` with an argument. [Object] can then be injected
+/// in to your `MyApp` widget (or equivalent).
 class AppLock extends StatefulWidget {
   final Widget Function(Object) child;
   final Widget lockScreen;
