@@ -1,3 +1,8 @@
+## 1.1.0+2 - 21th Dec 2019
+
+- Removing deprecating `child` method in preference for the `builder` method.
+- Updating Flutter version constraints
+
 ## 1.1.0+1 - 15th Dec 2019
 
 Deprecating `child` method in preference for the `builder` method - simply a name change.
