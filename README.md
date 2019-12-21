@@ -13,7 +13,7 @@ In your flutter project add the dependency:
 ```yaml
 dependencies:
   ...
-  flutter_app_lock: ^1.0.0
+  flutter_app_lock: ^1.2.0
 ```
 
 For help getting started with Flutter, view the online documentation.
@@ -39,9 +39,44 @@ AppLock.of(context).didUnlock();
 
 This will instantiate your `MyApp` (or your equivalent) if it's an app launch or simply returns to the current running instance of your app if it's resuming.
 
+## Enabling and disabling
+
+It is possible to enable and disable the `lockScreen` on app launch and on-demand.
+
+```dart
+runApp(AppLock(
+  builder: (args) => MyApp(data: args),
+  lockScreen: LockScreen(),
+  enabled: false,
+));
+```
+
+The above will cause `MyApp` to be built instantly and `lockScreen` will never be shown. The default for `enabled` is `true`.
+
+You can then enable `lockScreen` later on by doing:
+
+```dart
+AppLock.of(context).enable();
+```
+
+This will now cause the `lockScreen` to be shown on app pauses.
+
+If you wanted to disable the `lockScreen` again you can simply do:
+
+```dart
+AppLock.of(context).disable();
+```
+
+There is also a convenience method:
+
+```dart
+AppLock.of(context).setEnabled(true);
+AppLock.of(context).setEnabled(false);
+```
+
 ## Passing arguments
 
-In some scenarios, it might be appropriate to unlock a database or create some other objects from the `LockScreen` and then inject them in to your `MyApp` or equivalent, so you can better guarantee that services are instantiated or databases are opened/unlocked.
+In some scenarios, it might be appropriate to unlock a database or create some other objects from the `lockScreen` and then inject them in to your `MyApp` or equivalent, so you can better guarantee that services are instantiated or databases are opened/unlocked.
 
 You can do this by passing in an argument to the `didUnlock` method on `AppLock`:
 
