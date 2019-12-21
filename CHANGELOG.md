@@ -1,4 +1,21 @@
-## 1.1.0+2 - 21th Dec 2019
+## 1.2.0 - 21st Dec 2019
+
+New functionality to enable or disable the `lockScreen` at launch and on-demand.
+
+```dart
+runApp(AppLock(
+  builder: ...,
+  lockScreen: ...,
+  enabled: false,
+));
+```
+
+```dart
+AppLock.of(context).enable();
+AppLock.of(context).disable();
+```
+
+## 1.1.0+2 - 21st Dec 2019
 
 - Removing deprecating `child` method in preference for the `builder` method.
 - Updating Flutter version constraints

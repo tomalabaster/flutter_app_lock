@@ -10,5 +10,6 @@ void main() {
       data: args,
     ),
     lockScreen: LockScreen(),
+    enabled: false,
   ));
 }
