@@ -6,19 +6,16 @@ import 'package:flutter/material.dart';
 /// [lockScreen] is a [Widget] which should be a screen for handling login logic and
 /// calling `AppLock.of(context).didUnlock();` upon a successful login.
 ///
-/// [child] is a [Function] taking an [Object] as its argument and should return a
+/// [builder] is a [Function] taking an [Object] as its argument and should return a
 /// [Widget]. The [Object] argument is provided by the [lockScreen] calling
 /// `AppLock.of(context).didUnlock();` with an argument. [Object] can then be injected
 /// in to your `MyApp` widget (or equivalent).
 class AppLock extends StatefulWidget {
-  @Deprecated('Use [builder] instead.')
-  final Widget Function(Object) child;
   final Widget Function(Object) builder;
   final Widget lockScreen;
 
   const AppLock({
     Key key,
-    @Deprecated('Use [builder] instead.') this.child,
     @required this.builder,
     @required this.lockScreen,
   }) : super(key: key);
@@ -71,7 +68,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
       routes: {
         '/lock-screen': (context) => this._lockScreen,
         '/unlocked': (context) =>
-            this.widget.child(ModalRoute.of(context).settings.arguments)
+            this.widget.builder(ModalRoute.of(context).settings.arguments)
       },
     );
   }
