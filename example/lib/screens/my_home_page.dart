@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_app_lock/flutter_app_lock.dart';
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -34,6 +35,14 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.display1,
+            ),
+            RaisedButton(
+              child: Text('Set app lock enabled'),
+              onPressed: () => AppLock.of(context).enable(),
+            ),
+            RaisedButton(
+              child: Text('Set app lock disabled'),
+              onPressed: () => AppLock.of(context).disable(),
             ),
           ],
         ),

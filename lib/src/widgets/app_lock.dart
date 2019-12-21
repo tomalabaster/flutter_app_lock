@@ -40,7 +40,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance.addObserver(this);
 
-    this._didUnlockForAppLaunch = false;
+    this._didUnlockForAppLaunch = !this.widget.enabled;
     this._isPaused = false;
     this._enabled = this.widget.enabled;
 
@@ -71,7 +71,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: this._enabled ? this._lockScreen : this.widget.builder(null),
+      home: this.widget.enabled ? this._lockScreen : this.widget.builder(null),
       navigatorKey: _navigatorKey,
       routes: {
         '/lock-screen': (context) => this._lockScreen,
@@ -94,6 +94,26 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     } else {
       this._didUnlockOnAppLaunch(args);
     }
+  }
+
+  void setEnabled(bool enabled) {
+    if (enabled) {
+      this.enable();
+    } else {
+      this.disable();
+    }
+  }
+
+  void enable() {
+    setState(() {
+      this._enabled = true;
+    });
+  }
+
+  void disable() {
+    setState(() {
+      this._enabled = false;
+    });
   }
 
   void _didUnlockOnAppLaunch(Object args) {
