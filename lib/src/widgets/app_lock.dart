@@ -148,7 +148,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     _navigatorKey.currentState.pop();
   }
 
-  void _showLockScreen() {
+  void showLockScreen() {
     _navigatorKey.currentState.pushNamed('/lock-screen');
     this._isPaused = true;
   }
