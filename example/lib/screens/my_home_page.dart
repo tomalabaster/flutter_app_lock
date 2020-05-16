@@ -34,7 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.display1,
+              style: Theme.of(context).textTheme.headline4,
             ),
             RaisedButton(
               child: Text('Set app lock enabled'),
@@ -47,6 +47,14 @@ class _MyHomePageState extends State<MyHomePage> {
             RaisedButton(
               child: Text('Manually show lock screen'),
               onPressed: () => AppLock.of(context).showLockScreen(),
+            ),
+            RaisedButton(
+              child: Text('Manually show lock screen (awaiting)'),
+              onPressed: () async {
+                await AppLock.of(context).showLockScreen();
+
+                print('Did unlock!');
+              },
             ),
           ],
         ),

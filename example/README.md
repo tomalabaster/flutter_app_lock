@@ -33,7 +33,15 @@ class _MyHomePageState extends State<MyHomePage> {
           RaisedButton(
             child: Text('Manually show lock screen'),
             onPressed: () => AppLock.of(context).showLockScreen(),
-          )
+          ),
+          RaisedButton(
+            child: Text('Manually show lock screen (awaiting)'),
+            onPressed: () async {
+              await AppLock.of(context).showLockScreen();
+
+              print('Did unlock!');
+            },
+          ),
         ],
       ),
     );
