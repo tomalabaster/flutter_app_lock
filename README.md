@@ -13,7 +13,7 @@ In your flutter project add the dependency:
 ```yaml
 dependencies:
   ...
-  flutter_app_lock: ^1.2.0
+  flutter_app_lock: ^1.3.0
 ```
 
 For help getting started with Flutter, view the online documentation.
@@ -94,4 +94,14 @@ runApp(AppLock(
   builder: (args) => MyApp(database: args), // args is the `database` object passed in to `didUnlock`
   lockScreen: LockScreen(),
 ));
+```
+
+## Manually showing the lock screen
+
+In some scenarios, you might want to manually trigger the lock screen to show.
+
+You can do this by calling:
+
+```dart
+AppLock.of(context).showLockScreen();
 ```

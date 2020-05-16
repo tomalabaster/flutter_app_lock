@@ -7,7 +7,7 @@ void main() {
       data: args,
     ),
     lockScreen: LockScreen(),
-    enabled: false,
+    enabled: false, // default is true, first app launches you probably want false
   ));
 }
 ```
@@ -30,6 +30,10 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Text('Set app lock disabled'),
             onPressed: () => AppLock.of(context).disable(),
           ),
+          RaisedButton(
+            child: Text('Manually show lock screen'),
+            onPressed: () => AppLock.of(context).showLockScreen(),
+          )
         ],
       ),
     );
