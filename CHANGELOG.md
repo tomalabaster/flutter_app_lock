@@ -1,3 +1,7 @@
+## 1.2.0+1 - 21st Feb 2020
+
+Update to description.
+
 ## 1.2.0 - 21st Dec 2019
 
 New functionality to enable or disable the `lockScreen` at launch and on-demand.
