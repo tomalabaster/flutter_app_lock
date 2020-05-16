@@ -1,3 +1,13 @@
+## 1.3.1 - 16th May 2020
+
+`showLockScreen` is now a `Future`.
+
+```dart
+await AppLock.of(context).showLockScreen();
+
+print('Did unlock!');
+```
+
 ## 1.3.0 - 16th May 2020
 
 New functionality to show the lock screen on-demand.
