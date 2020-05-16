@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 /// A widget which handles app lifecycle events for showing and hiding a lock screen.
@@ -138,9 +140,9 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   }
 
   /// Manually show the [lockScreen].
-  void showLockScreen() {
-    _navigatorKey.currentState.pushNamed('/lock-screen');
+  Future<void> showLockScreen() {
     this._isPaused = true;
+    return _navigatorKey.currentState.pushNamed('/lock-screen');
   }
 
   void _didUnlockOnAppLaunch(Object args) {
