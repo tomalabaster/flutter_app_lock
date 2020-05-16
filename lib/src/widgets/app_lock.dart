@@ -137,6 +137,12 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     });
   }
 
+  /// Manually show the [lockScreen].
+  void showLockScreen() {
+    _navigatorKey.currentState.pushNamed('/lock-screen');
+    this._isPaused = true;
+  }
+
   void _didUnlockOnAppLaunch(Object args) {
     this._didUnlockForAppLaunch = true;
     _navigatorKey.currentState
@@ -146,10 +152,5 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   void _didUnlockOnAppPaused() {
     this._isPaused = false;
     _navigatorKey.currentState.pop();
-  }
-
-  void showLockScreen() {
-    _navigatorKey.currentState.pushNamed('/lock-screen');
-    this._isPaused = true;
   }
 }
