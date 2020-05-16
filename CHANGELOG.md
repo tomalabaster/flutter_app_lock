@@ -1,3 +1,11 @@
+## 1.3.0 - 16th May 2020
+
+New functionality to show the lock screen on-demand.
+
+```dart
+AppLock.of(context).showLockScreen();
+```
+
 ## 1.2.0+1 - 21st Feb 2020
 
 Update to description.
