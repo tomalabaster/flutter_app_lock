@@ -105,3 +105,11 @@ You can do this by calling:
 ```dart
 AppLock.of(context).showLockScreen();
 ```
+
+If you want to wait until the user has successfully unlocked again, `showLockScreen` returns a `Future` so you can `await` this method call.
+
+```dart
+await AppLock.of(context).showLockScreen();
+
+print('Did unlock!');
+```
