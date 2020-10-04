@@ -113,3 +113,18 @@ await AppLock.of(context).showLockScreen();
 
 print('Did unlock!');
 ```
+
+## Background lock latency
+
+It might be useful for apps to not require the lock screen to be shown immediately after entering the background state. You can now specify how long the app is allowed to be in the background before requiring the lock screen to be shown:
+
+```dart
+void main() {
+  runApp(AppLock(
+    ...,
+    backgroundLockLatency: const Duration(seconds: 30),
+  ));
+}
+```
+
+The above example allows the app to be in the background for up to 30 seconds without requiring the lock screen to be shown.

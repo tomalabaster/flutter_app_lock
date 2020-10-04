@@ -17,16 +17,22 @@ import 'package:flutter/material.dart';
 /// and subsequent app pauses. This can be changed later on using `AppLock.of(context).enable();`,
 /// `AppLock.of(context).disable();` or the convenience method `AppLock.of(context).setEnabled(enabled);`
 /// using a bool argument.
+///
+/// [backgroundLockLatency] determines how much time is allowed to pass when
+/// the app is in the background state before the [lockScreen] widget should be
+/// shown upon returning. It defaults to instantly.
 class AppLock extends StatefulWidget {
   final Widget Function(Object) builder;
   final Widget lockScreen;
   final bool enabled;
+  final Duration backgroundLockLatency;
 
   const AppLock({
     Key key,
     @required this.builder,
     @required this.lockScreen,
     this.enabled = true,
+    this.backgroundLockLatency = const Duration(seconds: 0),
   }) : super(key: key);
 
   static _AppLockState of(BuildContext context) =>
@@ -40,15 +46,17 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   static final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
   bool _didUnlockForAppLaunch;
-  bool _isPaused;
+  bool _isLocked;
   bool _enabled;
+
+  Timer _backgroundLockLatencyTimer;
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
 
     this._didUnlockForAppLaunch = !this.widget.enabled;
-    this._isPaused = false;
+    this._isLocked = false;
     this._enabled = this.widget.enabled;
 
     super.initState();
@@ -61,8 +69,13 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     }
 
     if (state == AppLifecycleState.paused &&
-        (!this._isPaused && this._didUnlockForAppLaunch)) {
-      this.showLockScreen();
+        (!this._isLocked && this._didUnlockForAppLaunch)) {
+      this._backgroundLockLatencyTimer =
+          Timer(this.widget.backgroundLockLatency, () => this.showLockScreen());
+    }
+
+    if (state == AppLifecycleState.resumed) {
+      this._backgroundLockLatencyTimer?.cancel();
     }
 
     super.didChangeAppLifecycleState(state);
@@ -71,6 +84,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+
+    this._backgroundLockLatencyTimer?.cancel();
 
     super.dispose();
   }
@@ -141,7 +156,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   /// Manually show the [lockScreen].
   Future<void> showLockScreen() {
-    this._isPaused = true;
+    this._isLocked = true;
     return _navigatorKey.currentState.pushNamed('/lock-screen');
   }
 
@@ -152,7 +167,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   }
 
   void _didUnlockOnAppPaused() {
-    this._isPaused = false;
+    this._isLocked = false;
     _navigatorKey.currentState.pop();
   }
 }
