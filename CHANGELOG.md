@@ -1,3 +1,16 @@
+## 1.4.0 - 4th Oct 2020
+
+New functionality to specify a period of time between the app going into the background state and when the lock screen should be shown.
+
+```dart
+runApp(AppLock(
+  ...,
+  backgroundLockLatency: const Duration(seconds: 30),
+));
+```
+
+This allows the app to go into the background state for the specified duration without causing the lock screen to be shown.
+
 ## 1.3.1 - 16th May 2020
 
 `showLockScreen` is now a `Future`.
