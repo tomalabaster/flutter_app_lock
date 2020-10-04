@@ -21,12 +21,14 @@ class AppLock extends StatefulWidget {
   final Widget Function(Object) builder;
   final Widget lockScreen;
   final bool enabled;
+  final Duration lockInBackgroundLatency;
 
   const AppLock({
     Key key,
     @required this.builder,
     @required this.lockScreen,
     this.enabled = true,
+    this.lockInBackgroundLatency = const Duration(seconds: 0),
   }) : super(key: key);
 
   static _AppLockState of(BuildContext context) =>
@@ -42,6 +44,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   bool _didUnlockForAppLaunch;
   bool _isPaused;
   bool _enabled;
+
+  Timer _lockInBackgroundLatencyTimer;
 
   @override
   void initState() {
@@ -62,7 +66,12 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
     if (state == AppLifecycleState.paused &&
         (!this._isPaused && this._didUnlockForAppLaunch)) {
-      this.showLockScreen();
+      this._lockInBackgroundLatencyTimer = Timer(
+          this.widget.lockInBackgroundLatency, () => this.showLockScreen());
+    }
+
+    if (state == AppLifecycleState.resumed) {
+      this._lockInBackgroundLatencyTimer?.cancel();
     }
 
     super.didChangeAppLifecycleState(state);
@@ -71,6 +80,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+
+    this._lockInBackgroundLatencyTimer?.cancel();
 
     super.dispose();
   }
