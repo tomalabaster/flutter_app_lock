@@ -11,5 +11,6 @@ void main() {
     ),
     lockScreen: LockScreen(),
     enabled: false,
+    backgroundLockLatency: const Duration(seconds: 30),
   ));
 }
