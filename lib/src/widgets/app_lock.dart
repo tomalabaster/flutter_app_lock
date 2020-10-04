@@ -46,7 +46,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   static final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
   bool _didUnlockForAppLaunch;
-  bool _isPaused;
+  bool _isLocked;
   bool _enabled;
 
   Timer _backgroundLockLatencyTimer;
@@ -56,7 +56,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
 
     this._didUnlockForAppLaunch = !this.widget.enabled;
-    this._isPaused = false;
+    this._isLocked = false;
     this._enabled = this.widget.enabled;
 
     super.initState();
@@ -69,7 +69,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     }
 
     if (state == AppLifecycleState.paused &&
-        (!this._isPaused && this._didUnlockForAppLaunch)) {
+        (!this._isLocked && this._didUnlockForAppLaunch)) {
       this._backgroundLockLatencyTimer =
           Timer(this.widget.backgroundLockLatency, () => this.showLockScreen());
     }
@@ -156,7 +156,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   /// Manually show the [lockScreen].
   Future<void> showLockScreen() {
-    this._isPaused = true;
+    this._isLocked = true;
     return _navigatorKey.currentState.pushNamed('/lock-screen');
   }
 
@@ -167,7 +167,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   }
 
   void _didUnlockOnAppPaused() {
-    this._isPaused = false;
+    this._isLocked = false;
     _navigatorKey.currentState.pop();
   }
 }
