@@ -17,18 +17,22 @@ import 'package:flutter/material.dart';
 /// and subsequent app pauses. This can be changed later on using `AppLock.of(context).enable();`,
 /// `AppLock.of(context).disable();` or the convenience method `AppLock.of(context).setEnabled(enabled);`
 /// using a bool argument.
+///
+/// [backgroundLockLatency] determines how much time is allowed to pass when
+/// the app is in the background state before the [lockScreen] widget should be
+/// shown upon returning. It defaults to instantly.
 class AppLock extends StatefulWidget {
   final Widget Function(Object) builder;
   final Widget lockScreen;
   final bool enabled;
-  final Duration lockInBackgroundLatency;
+  final Duration backgroundLockLatency;
 
   const AppLock({
     Key key,
     @required this.builder,
     @required this.lockScreen,
     this.enabled = true,
-    this.lockInBackgroundLatency = const Duration(seconds: 0),
+    this.backgroundLockLatency = const Duration(seconds: 0),
   }) : super(key: key);
 
   static _AppLockState of(BuildContext context) =>
@@ -45,7 +49,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   bool _isPaused;
   bool _enabled;
 
-  Timer _lockInBackgroundLatencyTimer;
+  Timer _backgroundLockLatencyTimer;
 
   @override
   void initState() {
@@ -66,12 +70,12 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
     if (state == AppLifecycleState.paused &&
         (!this._isPaused && this._didUnlockForAppLaunch)) {
-      this._lockInBackgroundLatencyTimer = Timer(
-          this.widget.lockInBackgroundLatency, () => this.showLockScreen());
+      this._backgroundLockLatencyTimer =
+          Timer(this.widget.backgroundLockLatency, () => this.showLockScreen());
     }
 
     if (state == AppLifecycleState.resumed) {
-      this._lockInBackgroundLatencyTimer?.cancel();
+      this._backgroundLockLatencyTimer?.cancel();
     }
 
     super.didChangeAppLifecycleState(state);
@@ -81,7 +85,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
 
-    this._lockInBackgroundLatencyTimer?.cancel();
+    this._backgroundLockLatencyTimer?.cancel();
 
     super.dispose();
   }
