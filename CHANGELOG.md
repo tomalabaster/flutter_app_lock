@@ -1,3 +1,7 @@
+## 1.4.0+1 - 4th Oct 2020
+
+Minor updates to docs.
+
 ## 1.4.0 - 4th Oct 2020
 
 New functionality to specify a period of time between the app going into the background state and when the lock screen should be shown.
