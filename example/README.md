@@ -8,6 +8,7 @@ void main() {
     ),
     lockScreen: LockScreen(),
     enabled: false, // default is true, first app launches you probably want false
+    backgroundLockLatency: const Duration(secondsL 30), // default is 0 seconds (immediately)
   ));
 }
 ```
