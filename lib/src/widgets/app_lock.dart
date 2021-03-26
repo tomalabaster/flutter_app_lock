@@ -43,13 +43,15 @@ class AppLock extends StatefulWidget {
 }
 
 class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
-  static final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
-
   bool _didUnlockForAppLaunch;
   bool _isLocked;
   bool _enabled;
 
   Timer _backgroundLockLatencyTimer;
+
+  Completer<void> _completer;
+
+  Widget _child;
 
   @override
   void initState() {
@@ -92,14 +94,19 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: this.widget.enabled ? this._lockScreen : this.widget.builder(null),
-      navigatorKey: _navigatorKey,
-      routes: {
-        '/lock-screen': (context) => this._lockScreen,
-        '/unlocked': (context) =>
-            this.widget.builder(ModalRoute.of(context).settings.arguments)
-      },
+    return Stack(
+      children: [
+        if (this._didUnlockForAppLaunch) this._child,
+        if (this._isLocked || !this._didUnlockForAppLaunch)
+          HeroControllerScope.none(
+            child: Navigator(
+              pages: [MaterialPage(child: this._lockScreen)],
+              onPopPage: (route, result) {
+                return route.didPop(result);
+              },
+            ),
+          )
+      ],
     );
   }
 
@@ -156,18 +163,32 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   /// Manually show the [lockScreen].
   Future<void> showLockScreen() {
-    this._isLocked = true;
-    return _navigatorKey.currentState.pushNamed('/lock-screen');
+    if (this._completer != null) {
+      return this._completer.future;
+    }
+
+    this._completer = Completer();
+
+    setState(() {
+      this._isLocked = true;
+    });
+
+    return this._completer.future;
   }
 
   void _didUnlockOnAppLaunch(Object args) {
-    this._didUnlockForAppLaunch = true;
-    _navigatorKey.currentState
-        .pushReplacementNamed('/unlocked', arguments: args);
+    setState(() {
+      this._didUnlockForAppLaunch = true;
+      this._child = this.widget.builder(args);
+    });
   }
 
   void _didUnlockOnAppPaused() {
-    this._isLocked = false;
-    _navigatorKey.currentState.pop();
+    setState(() {
+      this._isLocked = false;
+    });
+
+    this._completer?.complete();
+    this._completer = null;
   }
 }
