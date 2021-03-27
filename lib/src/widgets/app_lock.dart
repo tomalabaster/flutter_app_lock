@@ -45,7 +45,7 @@ class AppLock extends StatefulWidget {
 }
 
 class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
-  static final GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
+  GlobalKey<NavigatorState> _navigatorKey = GlobalKey();
 
   bool _didUnlockForAppLaunch;
   bool _isLocked;
@@ -84,8 +84,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
     if (state == AppLifecycleState.paused &&
         (!this._isLocked && this._didUnlockForAppLaunch)) {
-      this._backgroundLockLatencyTimer =
-          Timer(this.widget.backgroundLockLatency, () => this.showLockScreen());
+      this._backgroundLockLatencyTimer = Timer(
+          this.widget.backgroundLockLatency, this._showLockScreenFromTimer);
     }
 
     if (state == AppLifecycleState.resumed) {
@@ -107,7 +107,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: this.widget.enabled ? this._lockScreen : this._unlocked(null),
-      navigatorKey: _navigatorKey,
+      navigatorKey: this._navigatorKey,
       routes: {
         '/lock-screen': (context) => this._lockScreen,
         '/unlocked': (context) =>
@@ -139,6 +139,9 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     );
   }
 
+  bool get _isShowingLockScreen =>
+      this._isLocked || !this._didUnlockForAppLaunch;
+
   /// Causes `AppLock` to either pop the [lockScreen] if the app is already running
   /// or instantiates widget returned from the [builder] method if the app is cold
   /// launched.
@@ -160,48 +163,45 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   /// Makes sure that [AppLock] shows the [lockScreen] on subsequent app pauses if
   /// [enabled] is true of makes sure it isn't shown on subsequent app pauses if
   /// [enabled] is false.
-  ///
-  /// This is a convenience method for calling the [enable] or [disable] method based
-  /// on [enabled].
   void setEnabled(bool enabled) {
-    if (enabled) {
-      this.enable();
-    } else {
-      this.disable();
-    }
-  }
-
-  /// Makes sure that [AppLock] shows the [lockScreen] on subsequent app pauses.
-  void enable() {
     setState(() {
-      this._enabled = true;
+      this._enabled = enabled;
     });
 
     this._setupInactivityTimer();
   }
 
+  /// Makes sure that [AppLock] shows the [lockScreen] on subsequent app pauses.
+  ///
+  /// This is a convenience method for calling [setEnabled] with true.
+  void enable() {
+    this.setEnabled(true);
+  }
+
   /// Makes sure that [AppLock] doesn't show the [lockScreen] on subsequent app pauses.
+  ///
+  /// This is a convenience method for calling [setEnabled] with false.
   void disable() {
-    setState(() {
-      this._enabled = false;
-    });
+    this.setEnabled(false);
   }
 
   /// Manually show the [lockScreen].
   Future<void> showLockScreen() {
     this._isLocked = true;
-    return _navigatorKey.currentState.pushNamed('/lock-screen');
+    return this._navigatorKey.currentState.pushNamed('/lock-screen');
   }
 
   void _didUnlockOnAppLaunch(Object args) {
     this._didUnlockForAppLaunch = true;
-    _navigatorKey.currentState
+    this
+        ._navigatorKey
+        .currentState
         .pushReplacementNamed('/unlocked', arguments: args);
   }
 
   void _didUnlockOnAppPaused() {
     this._isLocked = false;
-    _navigatorKey.currentState.pop();
+    this._navigatorKey.currentState.pop();
   }
 
   void _setupInactivityTimer() {
@@ -209,10 +209,13 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
     if (this._enabled &&
         this.widget.inactivityLockLatency != null &&
-        _didUnlockForAppLaunch &&
-        !this._isLocked) {
-      this._inactivityLockLatencyTimer =
-          Timer(this.widget.inactivityLockLatency, () => this.showLockScreen());
+        !this._isShowingLockScreen) {
+      this._inactivityLockLatencyTimer = Timer(
+          this.widget.inactivityLockLatency, this._showLockScreenFromTimer);
     }
+  }
+
+  void _showLockScreenFromTimer() {
+    if (!this._isShowingLockScreen) this.showLockScreen();
   }
 }
