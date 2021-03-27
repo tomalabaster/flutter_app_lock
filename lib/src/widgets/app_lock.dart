@@ -26,6 +26,7 @@ class AppLock extends StatefulWidget {
   final Widget lockScreen;
   final bool enabled;
   final Duration backgroundLockLatency;
+  final Duration inactivityLockLatency;
 
   const AppLock({
     Key key,
@@ -33,6 +34,7 @@ class AppLock extends StatefulWidget {
     @required this.lockScreen,
     this.enabled = true,
     this.backgroundLockLatency = const Duration(seconds: 0),
+    this.inactivityLockLatency,
   }) : super(key: key);
 
   static _AppLockState of(BuildContext context) =>
@@ -50,20 +52,32 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   bool _enabled;
 
   Timer _backgroundLockLatencyTimer;
+  Timer _inactivityLockLatencyTimer;
 
   @override
   void initState() {
+    super.initState();
+
     WidgetsBinding.instance.addObserver(this);
 
     this._didUnlockForAppLaunch = !this.widget.enabled;
     this._isLocked = false;
     this._enabled = this.widget.enabled;
 
-    super.initState();
+    this._setupInactivityTimer();
+  }
+
+  @override
+  void didUpdateWidget(covariant AppLock oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    this._setupInactivityTimer();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+
     if (!this._enabled) {
       return;
     }
@@ -77,8 +91,6 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     if (state == AppLifecycleState.resumed) {
       this._backgroundLockLatencyTimer?.cancel();
     }
-
-    super.didChangeAppLifecycleState(state);
   }
 
   @override
@@ -86,6 +98,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     WidgetsBinding.instance.removeObserver(this);
 
     this._backgroundLockLatencyTimer?.cancel();
+    this._inactivityLockLatencyTimer?.cancel();
 
     super.dispose();
   }
@@ -93,13 +106,25 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: this.widget.enabled ? this._lockScreen : this.widget.builder(null),
+      home: this.widget.enabled ? this._lockScreen : this._unlocked(null),
       navigatorKey: _navigatorKey,
       routes: {
         '/lock-screen': (context) => this._lockScreen,
         '/unlocked': (context) =>
-            this.widget.builder(ModalRoute.of(context).settings.arguments)
+            this._unlocked(ModalRoute.of(context).settings.arguments),
       },
+    );
+  }
+
+  Widget _unlocked([Object args]) {
+    return Listener(
+      onPointerCancel: (_) => this._setupInactivityTimer(),
+      onPointerDown: (_) => this._setupInactivityTimer(),
+      onPointerHover: (_) => this._setupInactivityTimer(),
+      onPointerMove: (_) => this._setupInactivityTimer(),
+      onPointerSignal: (_) => this._setupInactivityTimer(),
+      onPointerUp: (_) => this._setupInactivityTimer(),
+      child: this.widget.builder(args),
     );
   }
 
@@ -169,5 +194,14 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   void _didUnlockOnAppPaused() {
     this._isLocked = false;
     _navigatorKey.currentState.pop();
+  }
+
+  void _setupInactivityTimer() {
+    this._inactivityLockLatencyTimer?.cancel();
+
+    if (this.widget.inactivityLockLatency != null) {
+      this._inactivityLockLatencyTimer =
+          Timer(this.widget.inactivityLockLatency, () => this.showLockScreen());
+    }
   }
 }
