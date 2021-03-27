@@ -117,14 +117,18 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   }
 
   Widget _unlocked([Object args]) {
-    return Listener(
-      onPointerCancel: (_) => this._setupInactivityTimer(),
-      onPointerDown: (_) => this._setupInactivityTimer(),
-      onPointerHover: (_) => this._setupInactivityTimer(),
-      onPointerMove: (_) => this._setupInactivityTimer(),
-      onPointerSignal: (_) => this._setupInactivityTimer(),
-      onPointerUp: (_) => this._setupInactivityTimer(),
-      child: this.widget.builder(args),
+    return RawKeyboardListener(
+      focusNode: FocusNode(),
+      onKey: (rawKeyEvent) => this._setupInactivityTimer(),
+      child: Listener(
+        onPointerCancel: (_) => this._setupInactivityTimer(),
+        onPointerDown: (_) => this._setupInactivityTimer(),
+        onPointerHover: (_) => this._setupInactivityTimer(),
+        onPointerMove: (_) => this._setupInactivityTimer(),
+        onPointerSignal: (_) => this._setupInactivityTimer(),
+        onPointerUp: (_) => this._setupInactivityTimer(),
+        child: this.widget.builder(args),
+      ),
     );
   }
 
@@ -149,6 +153,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     } else {
       this._didUnlockOnAppLaunch(args);
     }
+
+    this._setupInactivityTimer();
   }
 
   /// Makes sure that [AppLock] shows the [lockScreen] on subsequent app pauses if
@@ -170,6 +176,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     setState(() {
       this._enabled = true;
     });
+
+    this._setupInactivityTimer();
   }
 
   /// Makes sure that [AppLock] doesn't show the [lockScreen] on subsequent app pauses.
@@ -199,7 +207,10 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   void _setupInactivityTimer() {
     this._inactivityLockLatencyTimer?.cancel();
 
-    if (this.widget.inactivityLockLatency != null) {
+    if (this._enabled &&
+        this.widget.inactivityLockLatency != null &&
+        _didUnlockForAppLaunch &&
+        !this._isLocked) {
       this._inactivityLockLatencyTimer =
           Timer(this.widget.inactivityLockLatency, () => this.showLockScreen());
     }
