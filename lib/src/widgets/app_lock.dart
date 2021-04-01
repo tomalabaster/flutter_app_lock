@@ -22,22 +22,22 @@ import 'package:flutter/material.dart';
 /// the app is in the background state before the [lockScreen] widget should be
 /// shown upon returning. It defaults to instantly.
 class AppLock extends StatefulWidget {
-  final Widget Function(Object) builder;
+  final Widget Function(Object?) builder;
   final Widget lockScreen;
   final bool enabled;
   final Duration backgroundLockLatency;
-  final ThemeData theme;
+  final ThemeData? theme;
 
   const AppLock({
-    Key key,
-    @required this.builder,
-    @required this.lockScreen,
+    Key? key,
+    required this.builder,
+    required this.lockScreen,
     this.enabled = true,
     this.backgroundLockLatency = const Duration(seconds: 0),
     this.theme,
   }) : super(key: key);
 
-  static _AppLockState of(BuildContext context) =>
+  static _AppLockState? of(BuildContext context) =>
       context.findAncestorStateOfType<_AppLockState>();
 
   @override
@@ -45,19 +45,19 @@ class AppLock extends StatefulWidget {
 }
 
 class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
-  bool _didUnlockForAppLaunch;
-  bool _isLocked;
-  bool _enabled;
+  late bool _didUnlockForAppLaunch;
+  late bool _isLocked;
+  late bool _enabled;
 
-  Timer _backgroundLockLatencyTimer;
+  Timer? _backgroundLockLatencyTimer;
 
-  Completer<void> _completer;
+  Completer<void>? _completer;
 
-  Widget _child;
+  Widget? _child;
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
+    WidgetsBinding.instance!.addObserver(this);
 
     this._didUnlockForAppLaunch = !this.widget.enabled;
     this._isLocked = false;
@@ -87,7 +87,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
+    WidgetsBinding.instance!.removeObserver(this);
 
     this._backgroundLockLatencyTimer?.cancel();
 
@@ -98,7 +98,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        if (this._didUnlockForAppLaunch) this._child,
+        if (this._didUnlockForAppLaunch) this._child!,
         if (this._isLocked || !this._didUnlockForAppLaunch)
           HeroControllerScope.none(
             child: Navigator(
@@ -127,7 +127,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   /// when built. Use this when you want to inject objects created from the
   /// [lockScreen] in to the rest of your app so you can better guarantee that some
   /// objects, services or databases are already instantiated before using them.
-  void didUnlock([Object args]) {
+  void didUnlock([Object? args]) {
     if (this._didUnlockForAppLaunch) {
       this._didUnlockOnAppPaused();
     } else {
@@ -166,7 +166,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   /// Manually show the [lockScreen].
   Future<void> showLockScreen() {
     if (this._completer != null) {
-      return this._completer.future;
+      return this._completer!.future;
     }
 
     this._completer = Completer();
@@ -175,10 +175,10 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
       this._isLocked = true;
     });
 
-    return this._completer.future;
+    return this._completer!.future;
   }
 
-  void _didUnlockOnAppLaunch(Object args) {
+  void _didUnlockOnAppLaunch(Object? args) {
     setState(() {
       this._didUnlockForAppLaunch = true;
       this._child = this.widget.builder(args);
