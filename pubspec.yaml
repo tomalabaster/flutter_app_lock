@@ -5,7 +5,7 @@ homepage: https://github.com/tomalabaster/flutter_app_lock
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
-  flutter: ^1.12.1
+  flutter: ">=1.12.1"
 
 dependencies:
   flutter:
