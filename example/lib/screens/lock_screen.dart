@@ -20,7 +20,7 @@ class _LockScreenState extends State<LockScreen> {
             TextField(
               controller: this._textEditingController,
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text('Go'),
               onPressed: () {
                 if (this._textEditingController.text == '0000') {

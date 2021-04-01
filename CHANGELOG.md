@@ -1,3 +1,20 @@
+## 1.5.0 - 1st April 2021
+
+Added the ability to override the `theme` property of the `MaterialApp` which `AppLock` uses internally.
+
+```dart
+runApp(AppLock(
+  ...
+  theme: ThemeData(
+    textTheme: TextTheme(
+      headline1: TextStyle(fontSize: 32),
+    ),
+  ),
+));
+```
+
+`debugShowCheckedModeBanner` has also been set to false.
+
 ## 1.4.0+1 - 4th Oct 2020
 
 Minor updates to docs.

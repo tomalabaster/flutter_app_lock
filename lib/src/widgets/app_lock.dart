@@ -27,6 +27,7 @@ class AppLock extends StatefulWidget {
   final bool enabled;
   final Duration backgroundLockLatency;
   final Duration inactivityLockLatency;
+  final ThemeData theme;
 
   const AppLock({
     Key key,
@@ -35,6 +36,7 @@ class AppLock extends StatefulWidget {
     this.enabled = true,
     this.backgroundLockLatency = const Duration(seconds: 0),
     this.inactivityLockLatency,
+    this.theme,
   }) : super(key: key);
 
   static _AppLockState of(BuildContext context) =>
@@ -106,6 +108,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: this.widget.enabled ? this._lockScreen : this._unlocked(null),
       navigatorKey: this._navigatorKey,
       routes: {
@@ -113,6 +116,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
         '/unlocked': (context) =>
             this._unlocked(ModalRoute.of(context).settings.arguments),
       },
+      theme: this.widget.theme,
     );
   }
 
