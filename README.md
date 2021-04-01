@@ -13,7 +13,7 @@ In your flutter project add the dependency:
 ```yaml
 dependencies:
   ...
-  flutter_app_lock: ^1.4.0
+  flutter_app_lock: ^1.5.0
 ```
 
 For help getting started with Flutter, view the online documentation.
@@ -38,6 +38,22 @@ AppLock.of(context).didUnlock();
 ```
 
 This will instantiate your `MyApp` (or your equivalent) if it's an app launch or simply returns to the current running instance of your app if it's resuming.
+
+### Theme
+
+At present, `AppLock` uses a `MaterialApp` internally to push the `lockScreen` when locking the app. You can override the `theme` of this `MaterialApp` by passing through your `ThemeData` to `AppLock` using the `theme` property.
+
+```dart
+void main() {
+  runApp(AppLock(
+    builder: (args) => MyApp(data: args),
+    lockScreen: LockScreen(),
+    theme: ThemeData(
+      ...
+    ),
+  ));
+}
+```
 
 ## Enabling and disabling
 
