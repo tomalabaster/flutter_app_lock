@@ -8,7 +8,7 @@ void main() {
     ),
     lockScreen: LockScreen(),
     enabled: false, // default is true, first app launches you probably want false
-    backgroundLockLatency: const Duration(secondsL 30), // default is 0 seconds (immediately)
+    backgroundLockLatency: const Duration(seconds: 30), // default is 0 seconds (immediately)
   ));
 }
 ```
@@ -23,19 +23,19 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: <Widget>[
-          RaisedButton(
+          ElevatedButton(
             child: Text('Set app lock enabled'),
             onPressed: () => AppLock.of(context).enable(),
           ),
-          RaisedButton(
+          ElevatedButton(
             child: Text('Set app lock disabled'),
             onPressed: () => AppLock.of(context).disable(),
           ),
-          RaisedButton(
+          ElevatedButton(
             child: Text('Manually show lock screen'),
             onPressed: () => AppLock.of(context).showLockScreen(),
           ),
-          RaisedButton(
+          ElevatedButton(
             child: Text('Manually show lock screen (awaiting)'),
             onPressed: () async {
               await AppLock.of(context).showLockScreen();
