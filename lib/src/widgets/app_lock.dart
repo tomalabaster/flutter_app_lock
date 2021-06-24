@@ -26,7 +26,6 @@ class AppLock extends StatefulWidget {
   final Widget lockScreen;
   final bool enabled;
   final Duration backgroundLockLatency;
-  final ThemeData? theme;
 
   const AppLock({
     Key? key,
@@ -34,7 +33,6 @@ class AppLock extends StatefulWidget {
     required this.lockScreen,
     this.enabled = true,
     this.backgroundLockLatency = const Duration(seconds: 0),
-    this.theme,
   }) : super(key: key);
 
   static _AppLockState? of(BuildContext context) =>
@@ -45,13 +43,16 @@ class AppLock extends StatefulWidget {
 }
 
 class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
+  late GlobalKey<NavigatorState> _navigatorKey;
   late bool _didUnlockForAppLaunch;
   late bool _isLocked;
   late bool _enabled;
+  late bool _show;
 
   Timer? _backgroundLockLatencyTimer;
 
   Completer<void>? _completer;
+  Completer<void>? _routeAnimationCompleter;
 
   Widget? _child;
 
@@ -59,9 +60,11 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   void initState() {
     WidgetsBinding.instance!.addObserver(this);
 
+    this._navigatorKey = GlobalKey();
     this._didUnlockForAppLaunch = !this.widget.enabled;
     this._isLocked = false;
     this._enabled = this.widget.enabled;
+    this._show = this.widget.enabled;
 
     super.initState();
   }
@@ -102,8 +105,28 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
         if (this._isLocked || !this._didUnlockForAppLaunch)
           HeroControllerScope.none(
             child: Navigator(
-              pages: [MaterialPage(child: this._lockScreen)],
+              key: this._navigatorKey,
+              pages: [
+                const MaterialPage(child: SizedBox()),
+                if (this._show) MaterialPage(child: this._lockScreen),
+              ],
               onPopPage: (route, result) {
+                if (route is PageRoute) {
+                  late void Function(AnimationStatus) listener;
+
+                  listener = (status) {
+                    if (status == AnimationStatus.dismissed) {
+                      route.animation!.removeStatusListener(listener);
+
+                      this._routeAnimationCompleter?.complete();
+                    }
+                  };
+
+                  route.animation!.addStatusListener(listener);
+                } else {
+                  this._routeAnimationCompleter?.complete();
+                }
+
                 return route.didPop(result);
               },
             ),
@@ -128,6 +151,10 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   /// [lockScreen] in to the rest of your app so you can better guarantee that some
   /// objects, services or databases are already instantiated before using them.
   void didUnlock([Object? args]) {
+    setState(() {
+      this._show = false;
+    });
+
     if (this._didUnlockForAppLaunch) {
       this._didUnlockOnAppPaused();
     } else {
@@ -175,6 +202,12 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
       this._isLocked = true;
     });
 
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      setState(() {
+        this._show = true;
+      });
+    });
+
     return this._completer!.future;
   }
 
@@ -185,9 +218,16 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     });
   }
 
-  void _didUnlockOnAppPaused() {
+  void _didUnlockOnAppPaused() async {
+    this._routeAnimationCompleter = Completer();
+
+    this._navigatorKey.currentState!.pop();
+
+    await this._routeAnimationCompleter!.future;
+
     setState(() {
       this._isLocked = false;
+      this._show = false;
     });
 
     this._completer?.complete();

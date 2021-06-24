@@ -3,7 +3,6 @@ import 'package:flutter_app_lock/flutter_app_lock.dart';
 
 import '../screens/lock_screen.dart';
 import '../screens/my_home_page.dart';
-import '../screens/my_other_page.dart';
 
 class MyApp extends StatelessWidget {
   final String data;
@@ -19,7 +18,7 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/': (context) => MyHomePage(title: 'Flutter Demo Home Page'),
-        '/other-page': (context) => MyOtherPage(),
+        '/my-second-page': (context) => MyHomePage(title: 'My Second Page'),
       },
       builder: (context, child) {
         return AppLock(

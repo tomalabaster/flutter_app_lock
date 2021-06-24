@@ -27,6 +27,12 @@ class _LockScreenState extends State<LockScreen> {
                   AppLock.of(context).didUnlock('some data');
                 }
               },
+            ),
+            ElevatedButton(
+              child: Text('Go'),
+              onPressed: () {
+                Navigator.of(context).pushNamed('/my-second-page');
+              },
             )
           ],
         ),
