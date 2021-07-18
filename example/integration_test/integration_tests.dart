@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -9,6 +10,7 @@ final lockScreen = find.byKey(Key('LockScreen'));
 final showButton = find.byKey(Key('ShowButton'));
 final passwordField = find.byKey(Key('PasswordField'));
 final unlockButton = find.byKey(Key('UnlockButton'));
+final enableButton = find.byKey(Key('EnableButton'));
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -37,6 +39,15 @@ void main() {
         await enterCorrectPassword(tester);
 
         expect(lockScreen, findsNothing);
+      });
+
+      testWidgets('The app is instantiated with some data',
+          (WidgetTester tester) async {
+        app.main(enabled: true);
+
+        await enterCorrectPassword(tester);
+
+        expect(find.textContaining('some data'), findsOneWidget);
       });
     });
 
@@ -92,7 +103,6 @@ void main() {
         app.main(enabled: false);
 
         await tester.pumpAndSettle();
-
         await tester.tap(showButton);
         await tester.pumpAndSettle();
 
@@ -102,6 +112,12 @@ void main() {
   });
 
   group('Given an app with AppLock enabled', () {
+    Future<void> enableAfterLaunch(WidgetTester tester) async {
+      await tester.pumpAndSettle();
+      await tester.tap(enableButton);
+      await tester.pumpAndSettle();
+    }
+
     group('When the app is launched', () {
       testWidgets('The app is not visible', (WidgetTester tester) async {
         app.main(enabled: true);
@@ -113,6 +129,51 @@ void main() {
 
       testWidgets('The lock screen is visible', (WidgetTester tester) async {
         app.main(enabled: true);
+
+        await tester.pumpAndSettle();
+
+        expect(lockScreen, findsOneWidget);
+      });
+    });
+
+    group(
+        'When the app has been in the background for less than the specified duration',
+        () {
+      testWidgets('The lock screen is not visible',
+          (WidgetTester tester) async {
+        app.main(
+            enabled: false, backgroundLockLatency: const Duration(seconds: 1));
+
+        await enableAfterLaunch(tester);
+
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+
+        await Future.delayed(const Duration(seconds: 0));
+
+        tester.binding
+            .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+
+        await tester.pumpAndSettle();
+
+        expect(lockScreen, findsNothing);
+      });
+    });
+
+    group(
+        'When the app has been in the background for longer than the specified duration',
+        () {
+      testWidgets('The lock screen is visible', (WidgetTester tester) async {
+        app.main(
+            enabled: false, backgroundLockLatency: const Duration(seconds: 1));
+
+        await enableAfterLaunch(tester);
+
+        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+
+        await Future.delayed(const Duration(seconds: 1));
+
+        tester.binding
+            .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
 
         await tester.pumpAndSettle();
 
