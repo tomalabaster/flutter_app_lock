@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_lock/flutter_app_lock.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({
+    Key key,
+    this.title,
+    this.data,
+  }) : super(key: key);
 
   final String title;
+  final String data;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -36,19 +41,24 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
+            Text('App unlocked with the following data: ${this.widget.data}'),
             ElevatedButton(
+              key: Key('EnableButton'),
               child: Text('Set app lock enabled'),
               onPressed: () => AppLock.of(context).enable(),
             ),
             ElevatedButton(
+              key: Key('DisableButton'),
               child: Text('Set app lock disabled'),
               onPressed: () => AppLock.of(context).disable(),
             ),
             ElevatedButton(
+              key: Key('ShowButton'),
               child: Text('Manually show lock screen'),
               onPressed: () => AppLock.of(context).showLockScreen(),
             ),
             ElevatedButton(
+              key: Key('AwaitShowButton'),
               child: Text('Manually show lock screen (awaiting)'),
               onPressed: () async {
                 await AppLock.of(context).showLockScreen();
