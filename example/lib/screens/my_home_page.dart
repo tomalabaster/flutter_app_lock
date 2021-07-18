@@ -37,18 +37,22 @@ class _MyHomePageState extends State<MyHomePage> {
               style: Theme.of(context).textTheme.headline4,
             ),
             ElevatedButton(
+              key: Key('EnableButton'),
               child: Text('Set app lock enabled'),
               onPressed: () => AppLock.of(context).enable(),
             ),
             ElevatedButton(
+              key: Key('DisableButton'),
               child: Text('Set app lock disabled'),
               onPressed: () => AppLock.of(context).disable(),
             ),
             ElevatedButton(
+              key: Key('ShowButton'),
               child: Text('Manually show lock screen'),
               onPressed: () => AppLock.of(context).showLockScreen(),
             ),
             ElevatedButton(
+              key: Key('AwaitShowButton'),
               child: Text('Manually show lock screen (awaiting)'),
               onPressed: () async {
                 await AppLock.of(context).showLockScreen();
