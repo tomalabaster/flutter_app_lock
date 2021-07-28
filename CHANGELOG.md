@@ -1,3 +1,9 @@
+## 2.0.0 - 28th July 2021
+
+Migrated to null-safety!
+
+There are now also integration tests in the example project which can be run using `flutter test integration_test/integration_tests.dart`.
+
 ## 1.5.0 - 1st April 2021
 
 Added the ability to override the `theme` property of the `MaterialApp` which `AppLock` uses internally.
