@@ -13,7 +13,7 @@ In your flutter project add the dependency:
 ```yaml
 dependencies:
   ...
-  flutter_app_lock: ^1.5.0
+  flutter_app_lock: ^2.0.0
 ```
 
 For help getting started with Flutter, view the online documentation.
@@ -144,3 +144,9 @@ void main() {
 ```
 
 The above example allows the app to be in the background for up to 30 seconds without requiring the lock screen to be shown.
+
+## Tests
+
+Integration tests have been introduced in the example project and were used to confirm the behaviour hasn't changed since the move to null-safety.
+
+They can be run by running `flutter test integration_test/integration_tests.dart` in a terminal.
