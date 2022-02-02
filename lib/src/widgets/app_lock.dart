@@ -27,6 +27,8 @@ class AppLock extends StatefulWidget {
   final bool enabled;
   final Duration backgroundLockLatency;
   final ThemeData? theme;
+  final ThemeData? darkTheme;
+  final ThemeMode? themeMode;
 
   const AppLock({
     Key? key,
@@ -35,6 +37,8 @@ class AppLock extends StatefulWidget {
     this.enabled = true,
     this.backgroundLockLatency = const Duration(seconds: 0),
     this.theme,
+    this.darkTheme,
+    this.themeMode,
   }) : super(key: key);
 
   static _AppLockState? of(BuildContext context) =>
@@ -103,7 +107,9 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
         '/unlocked': (context) =>
             this.widget.builder(ModalRoute.of(context)!.settings.arguments)
       },
+      themeMode: this.widget.themeMode,
       theme: this.widget.theme,
+      darkTheme: this.widget.darkTheme,
     );
   }
 
