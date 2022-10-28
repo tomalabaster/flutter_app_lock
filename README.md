@@ -13,7 +13,7 @@ In your flutter project add the dependency:
 ```yaml
 dependencies:
   ...
-  flutter_app_lock: ^2.0.0
+  flutter_app_lock: ^3.0.0
 ```
 
 For help getting started with Flutter, view the online documentation.
@@ -23,7 +23,7 @@ For help getting started with Flutter, view the online documentation.
 ```dart
 void main() {
   runApp(AppLock(
-    builder: (args) => MyApp(data: args),
+    builder: (arg) => MyApp(data: arg),
     lockScreen: LockScreen(),
   ));
 }
@@ -34,7 +34,7 @@ Simply wrap the initialization of `MyApp` (or your equivalent) in a function and
 `LockScreen` is your own widget implementing your own login logic which should call the following once a successful login has occured.
 
 ```dart
-AppLock.of(context).didUnlock();
+AppLock.of(context)!.didUnlock();
 ```
 
 This will instantiate your `MyApp` (or your equivalent) if it's an app launch or simply returns to the current running instance of your app if it's resuming.
@@ -46,7 +46,7 @@ At present, `AppLock` uses a `MaterialApp` internally to push the `lockScreen` w
 ```dart
 void main() {
   runApp(AppLock(
-    builder: (args) => MyApp(data: args),
+    builder: (arg) => MyApp(data: arg),
     lockScreen: LockScreen(),
     theme: ThemeData(
       ...
@@ -61,7 +61,7 @@ It is possible to enable and disable the `lockScreen` on app launch and on-deman
 
 ```dart
 runApp(AppLock(
-  builder: (args) => MyApp(data: args),
+  builder: (arg) => MyApp(data: arg),
   lockScreen: LockScreen(),
   enabled: false,
 ));
@@ -72,7 +72,7 @@ The above will cause `MyApp` to be built instantly and `lockScreen` will never b
 You can then enable `lockScreen` later on by doing:
 
 ```dart
-AppLock.of(context).enable();
+AppLock.of(context)!.enable();
 ```
 
 This will now cause the `lockScreen` to be shown on app pauses.
@@ -80,14 +80,14 @@ This will now cause the `lockScreen` to be shown on app pauses.
 If you wanted to disable the `lockScreen` again you can simply do:
 
 ```dart
-AppLock.of(context).disable();
+AppLock.of(context)!.disable();
 ```
 
 There is also a convenience method:
 
 ```dart
-AppLock.of(context).setEnabled(true);
-AppLock.of(context).setEnabled(false);
+AppLock.of(context)!.setEnabled(true);
+AppLock.of(context)!.setEnabled(false);
 ```
 
 ## Passing arguments
@@ -99,7 +99,7 @@ You can do this by passing in an argument to the `didUnlock` method on `AppLock`
 ```dart
 var database = await openDatabase(...);
 
-AppLock.of(context).didUnlock(database);
+AppLock.of(context)!.didUnlock(database);
 ```
 
 This object is then available as part of the `AppLock` builder method, `builder`:
@@ -107,7 +107,7 @@ This object is then available as part of the `AppLock` builder method, `builder`
 ```dart
 ...
 runApp(AppLock(
-  builder: (args) => MyApp(database: args), // args is the `database` object passed in to `didUnlock`
+  builder: (arg) => MyApp(database: arg), // arg is the `database` object passed in to `didUnlock`
   lockScreen: LockScreen(),
 ));
 ```
@@ -119,13 +119,13 @@ In some scenarios, you might want to manually trigger the lock screen to show.
 You can do this by calling:
 
 ```dart
-AppLock.of(context).showLockScreen();
+AppLock.of(context)!.showLockScreen();
 ```
 
 If you want to wait until the user has successfully unlocked again, `showLockScreen` returns a `Future` so you can `await` this method call.
 
 ```dart
-await AppLock.of(context).showLockScreen();
+await AppLock.of(context)!.showLockScreen();
 
 print('Did unlock!');
 ```

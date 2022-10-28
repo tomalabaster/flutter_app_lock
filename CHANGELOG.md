@@ -1,3 +1,11 @@
+## 3.0.0 - 28th October 2022
+
+Flutter 3 support!
+
+Flutter 3 was always supported, but the `!` operator has been removed from calls to `WidgetsBinding.instance` which was causing an annoying warning.
+
+All packages have been upgraded and the example project has also been upgraded.
+
 ## 2.0.0 - 28th July 2021
 
 Migrated to null-safety!

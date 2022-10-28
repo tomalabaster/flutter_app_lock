@@ -24,7 +24,7 @@ import 'package:flutter/material.dart';
 /// the app is in the background state before the [lockScreen] widget should be
 /// shown upon returning. It defaults to instantly.
 class AppLock extends StatefulWidget {
-  final Widget Function(Object?) builder;
+  final Widget Function(Object? arg) builder;
   final Widget lockScreen;
   final bool enabled;
   final Duration backgroundLockLatency;
