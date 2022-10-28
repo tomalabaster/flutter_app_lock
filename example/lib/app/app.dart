@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import '../screens/my_home_page.dart';
 
 class MyApp extends StatelessWidget {
-  final String data;
+  final String? data;
 
   const MyApp({
-    Key key,
+    Key? key,
     this.data,
   }) : super(key: key);
 
@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       ),
       home: MyHomePage(
         title: 'Flutter Demo Home Page',
-        data: this.data,
+        data: data,
       ),
     );
   }

@@ -1,9 +1,11 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'package:flutter/material.dart';
 import 'package:flutter_app_lock/flutter_app_lock.dart';
 
 class LockScreen extends StatefulWidget {
   const LockScreen({
-    Key key,
+    Key? key,
   }) : super(key: key);
 
   @override
@@ -11,18 +13,18 @@ class LockScreen extends StatefulWidget {
 }
 
 class _LockScreenState extends State<LockScreen> {
-  TextEditingController _textEditingController;
+  late final TextEditingController _textEditingController;
 
   @override
   void initState() {
     super.initState();
 
-    this._textEditingController = TextEditingController();
+    _textEditingController = TextEditingController();
   }
 
   @override
   void dispose() {
-    this._textEditingController.dispose();
+    _textEditingController.dispose();
 
     super.dispose();
   }
@@ -31,20 +33,20 @@ class _LockScreenState extends State<LockScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.0),
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             TextField(
-              key: Key('PasswordField'),
-              controller: this._textEditingController,
+              key: const Key('PasswordField'),
+              controller: _textEditingController,
             ),
             ElevatedButton(
-              key: Key('UnlockButton'),
-              child: Text('Go'),
+              key: const Key('UnlockButton'),
+              child: const Text('Go'),
               onPressed: () {
-                if (this._textEditingController.text == '0000') {
-                  AppLock.of(context).didUnlock('some data');
+                if (_textEditingController.text == '0000') {
+                  AppLock.of(context)!.didUnlock('some data');
                 }
               },
             )

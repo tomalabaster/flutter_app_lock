@@ -4,13 +4,13 @@ import 'package:integration_test/integration_test.dart';
 
 import 'package:flutter_app_lock_example/main.dart' as app;
 
-final myApp = find.byKey(Key('MyApp'));
-final lockScreen = find.byKey(Key('LockScreen'));
-final showButton = find.byKey(Key('ShowButton'));
-final passwordField = find.byKey(Key('PasswordField'));
-final unlockButton = find.byKey(Key('UnlockButton'));
-final enableButton = find.byKey(Key('EnableButton'));
-final disableButton = find.byKey(Key('DisableButton'));
+final myApp = find.byKey(const Key('MyApp'));
+final lockScreen = find.byKey(const Key('LockScreen'));
+final showButton = find.byKey(const Key('ShowButton'));
+final passwordField = find.byKey(const Key('PasswordField'));
+final unlockButton = find.byKey(const Key('UnlockButton'));
+final enableButton = find.byKey(const Key('EnableButton'));
+final disableButton = find.byKey(const Key('DisableButton'));
 
 Future<void> enterCorrectPassword(WidgetTester tester) async {
   await tester.pumpAndSettle();

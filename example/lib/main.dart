@@ -10,10 +10,10 @@ void main({
 }) {
   runApp(AppLock(
     builder: (args) => MyApp(
-      key: Key('MyApp'),
-      data: args,
+      key: const Key('MyApp'),
+      data: args as String?,
     ),
-    lockScreen: LockScreen(
+    lockScreen: const LockScreen(
       key: Key('LockScreen'),
     ),
     enabled: enabled,
