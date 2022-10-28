@@ -1,11 +1,11 @@
 name: flutter_app_lock
 description: A Flutter package for showing a lock screen on app open and app pause.
-version: 2.0.0
+version: 3.0.0
 homepage: https://github.com/tomalabaster/flutter_app_lock
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.12.1"
+  sdk: ">=2.17.0 <3.0.0"
+  flutter: ">=3.0.0"
 
 dependencies:
   flutter:

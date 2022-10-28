@@ -55,7 +55,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   void initState() {
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance.addObserver(this);
 
     this._didUnlockForAppLaunch = !this.widget.enabled;
     this._isLocked = false;
@@ -85,7 +85,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    WidgetsBinding.instance!.removeObserver(this);
+    WidgetsBinding.instance.removeObserver(this);
 
     this._backgroundLockLatencyTimer?.cancel();
 
