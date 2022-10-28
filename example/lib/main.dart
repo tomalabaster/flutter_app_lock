@@ -9,9 +9,9 @@ void main({
   Duration backgroundLockLatency = const Duration(seconds: 30),
 }) {
   runApp(AppLock(
-    builder: (args) => MyApp(
+    builder: (arg) => MyApp(
       key: const Key('MyApp'),
-      data: args as String?,
+      data: arg as String?,
     ),
     lockScreen: const LockScreen(
       key: Key('LockScreen'),
