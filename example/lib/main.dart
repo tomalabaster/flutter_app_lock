@@ -5,16 +5,15 @@ import 'app/app.dart';
 import 'screens/lock_screen.dart';
 
 void main({
-  @visibleForTesting bool enabled = false,
-  @visibleForTesting
-      Duration backgroundLockLatency = const Duration(seconds: 30),
+  bool enabled = false,
+  Duration backgroundLockLatency = const Duration(seconds: 30),
 }) {
   runApp(AppLock(
     builder: (args) => MyApp(
-      key: Key('MyApp'),
-      data: args,
+      key: const Key('MyApp'),
+      data: args as String?,
     ),
-    lockScreen: LockScreen(
+    lockScreen: const LockScreen(
       key: Key('LockScreen'),
     ),
     enabled: enabled,

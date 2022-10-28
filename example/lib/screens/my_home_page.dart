@@ -1,15 +1,18 @@
+// ignore_for_file: library_private_types_in_public_api
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_app_lock/flutter_app_lock.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({
-    Key key,
-    this.title,
+  const MyHomePage({
+    Key? key,
+    required this.title,
     this.data,
   }) : super(key: key);
 
   final String title;
-  final String data;
+  final String? data;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -34,36 +37,38 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               'You have pushed the button this many times:',
             ),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
-            Text('App unlocked with the following data: ${this.widget.data}'),
+            Text('App unlocked with the following data: ${widget.data}'),
             ElevatedButton(
-              key: Key('EnableButton'),
-              child: Text('Set app lock enabled'),
-              onPressed: () => AppLock.of(context).enable(),
+              key: const Key('EnableButton'),
+              child: const Text('Set app lock enabled'),
+              onPressed: () => AppLock.of(context)!.enable(),
             ),
             ElevatedButton(
-              key: Key('DisableButton'),
-              child: Text('Set app lock disabled'),
-              onPressed: () => AppLock.of(context).disable(),
+              key: const Key('DisableButton'),
+              child: const Text('Set app lock disabled'),
+              onPressed: () => AppLock.of(context)!.disable(),
             ),
             ElevatedButton(
-              key: Key('ShowButton'),
-              child: Text('Manually show lock screen'),
-              onPressed: () => AppLock.of(context).showLockScreen(),
+              key: const Key('ShowButton'),
+              child: const Text('Manually show lock screen'),
+              onPressed: () => AppLock.of(context)!.showLockScreen(),
             ),
             ElevatedButton(
-              key: Key('AwaitShowButton'),
-              child: Text('Manually show lock screen (awaiting)'),
+              key: const Key('AwaitShowButton'),
+              child: const Text('Manually show lock screen (awaiting)'),
               onPressed: () async {
-                await AppLock.of(context).showLockScreen();
+                await AppLock.of(context)!.showLockScreen();
 
-                print('Did unlock!');
+                if (kDebugMode) {
+                  print('Did unlock!');
+                }
               },
             ),
           ],
@@ -72,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
       floatingActionButton: FloatingActionButton(
         onPressed: _incrementCounter,
         tooltip: 'Increment',
-        child: Icon(Icons.add),
+        child: const Icon(Icons.add),
       ),
     );
   }
