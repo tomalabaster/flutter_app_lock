@@ -24,11 +24,10 @@ import 'package:flutter/material.dart';
 /// the app is in the background state before the [lockScreen] widget should be
 /// shown upon returning. It defaults to instantly.
 class AppLock extends StatefulWidget {
-  final Widget Function(Object? arg) builder;
+  final Widget Function(BuildContext context, Object? arg) builder;
   final Widget lockScreen;
   final bool enabled;
   final Duration backgroundLockLatency;
-  final ThemeData? theme;
 
   const AppLock({
     Key? key,
@@ -36,7 +35,6 @@ class AppLock extends StatefulWidget {
     required this.lockScreen,
     this.enabled = true,
     this.backgroundLockLatency = const Duration(seconds: 0),
-    this.theme,
   }) : super(key: key);
 
   static _AppLockState? of(BuildContext context) =>
@@ -96,16 +94,21 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: widget.enabled ? _lockScreen : widget.builder(null),
-      navigatorKey: _navigatorKey,
-      routes: {
-        '/lock-screen': (context) => _lockScreen,
-        '/unlocked': (context) =>
-            widget.builder(ModalRoute.of(context)!.settings.arguments)
+    return Navigator(
+      key: _navigatorKey,
+      initialRoute: widget.enabled ? '/lock-screen' : '/unlocked',
+      onGenerateRoute: (settings) {
+        if (settings.name == '/lock-screen') {
+          return MaterialPageRoute(builder: (context) => _lockScreen);
+        } else if (settings.name == '/unlocked') {
+          return MaterialPageRoute(
+            builder: (context) => widget.builder(
+                context, ModalRoute.of(context)!.settings.arguments),
+          );
+        }
+
+        return null;
       },
-      theme: widget.theme,
     );
   }
 
