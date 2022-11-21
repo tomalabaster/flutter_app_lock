@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.blue,
       ),
       builder: (context, child) => AppLock(
         builder: (context, arg) => child!,
@@ -30,6 +30,7 @@ class MyApp extends StatelessWidget {
         backgroundLockLatency: backgroundLockLatency,
       ),
       home: const MyHomePage(
+        key: Key('MyHomePage'),
         title: 'Flutter Demo Home Page',
       ),
     );
