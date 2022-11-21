@@ -4,7 +4,7 @@ import 'package:integration_test/integration_test.dart';
 
 import 'package:flutter_app_lock_example/main.dart' as app;
 
-final myApp = find.byKey(const Key('MyApp'));
+final myHomePage = find.byKey(const Key('MyHomePage'));
 final lockScreen = find.byKey(const Key('LockScreen'));
 final showButton = find.byKey(const Key('ShowButton'));
 final passwordField = find.byKey(const Key('PasswordField'));
@@ -54,12 +54,12 @@ void main() {
 
   group('Given an active lock screen', () {
     group('When entering a correct password', () {
-      testWidgets('The app is visible', (WidgetTester tester) async {
+      testWidgets('The home screen is visible', (WidgetTester tester) async {
         app.main(enabled: true);
 
         await enterCorrectPassword(tester);
 
-        expect(myApp, findsOneWidget);
+        expect(myHomePage, findsOneWidget);
       });
 
       testWidgets('The lock screen is no longer visible',
@@ -71,7 +71,7 @@ void main() {
         expect(lockScreen, findsNothing);
       });
 
-      testWidgets('The app is instantiated with some data',
+      testWidgets('Some data is made available to the rest of the app',
           (WidgetTester tester) async {
         app.main(enabled: true);
 
@@ -82,12 +82,12 @@ void main() {
     });
 
     group('When entering an incorrect password', () {
-      testWidgets('The app is still not visible', (WidgetTester tester) async {
+      testWidgets('The home screen is still not visible', (WidgetTester tester) async {
         app.main(enabled: true);
 
         await enterIncorrectPassword(tester);
 
-        expect(myApp, findsNothing);
+        expect(myHomePage, findsNothing);
       });
 
       testWidgets('The lock screen remains visible',
@@ -103,12 +103,12 @@ void main() {
 
   group('Given an app with AppLock disabled', () {
     group('When the app is launched', () {
-      testWidgets('The app is visible', (WidgetTester tester) async {
+      testWidgets('The home screen is visible', (WidgetTester tester) async {
         app.main(enabled: false);
 
         await tester.pumpAndSettle();
 
-        expect(myApp, findsOneWidget);
+        expect(myHomePage, findsOneWidget);
       });
 
       testWidgets('The lock screen is not visible',
@@ -151,12 +151,12 @@ void main() {
 
   group('Given an app with AppLock enabled', () {
     group('When the app is launched', () {
-      testWidgets('The app is not visible', (WidgetTester tester) async {
+      testWidgets('The home screen is not visible', (WidgetTester tester) async {
         app.main(enabled: true);
 
         await tester.pumpAndSettle();
 
-        expect(myApp, findsNothing);
+        expect(myHomePage, findsNothing);
       });
 
       testWidgets('The lock screen is visible', (WidgetTester tester) async {
