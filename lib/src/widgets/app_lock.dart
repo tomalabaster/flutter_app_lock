@@ -24,19 +24,50 @@ import 'package:flutter/material.dart';
 /// the app is in the background state before the [lockScreen] widget should be
 /// shown upon returning. It defaults to instantly.
 class AppLock extends StatefulWidget {
-  final Widget Function(Object? arg) builder;
+  static const String lockScreenRoute = '/lock-screen';
+  static const String defaultUnlockedRoute = '/unlocked';
+
   final Widget lockScreen;
   final bool enabled;
   final Duration backgroundLockLatency;
-  final ThemeData? theme;
+  final LockedAppBuilder appBuilder;
+  final String initialRoute;
+  final Map<String, Widget Function(BuildContext)> routes;
 
-  const AppLock({
+  AppLock({
     Key? key,
-    required this.builder,
+    required Widget Function(Object? arg) builder,
+    required Widget lockScreen,
+    bool enabled = true,
+    Duration backgroundLockLatency = const Duration(seconds: 0),
+    ThemeData? theme,
+  }) : this.builder(
+          key: key,
+          appBuilder: (navigatorKey, initialRoute, routes) => MaterialApp(
+            debugShowCheckedModeBanner: false,
+            navigatorKey: navigatorKey,
+            routes: routes,
+            initialRoute: initialRoute,
+            theme: theme,
+          ),
+          initialRoute: defaultUnlockedRoute,
+          routes: {
+            defaultUnlockedRoute: (context) =>
+                builder(ModalRoute.of(context)!.settings.arguments),
+          },
+          lockScreen: lockScreen,
+          enabled: enabled,
+          backgroundLockLatency: backgroundLockLatency,
+        );
+
+  const AppLock.builder({
+    Key? key,
+    required this.appBuilder,
+    required this.initialRoute,
+    required this.routes,
     required this.lockScreen,
     this.enabled = true,
     this.backgroundLockLatency = const Duration(seconds: 0),
-    this.theme,
   }) : super(key: key);
 
   static _AppLockState? of(BuildContext context) =>
@@ -96,16 +127,11 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: widget.enabled ? _lockScreen : widget.builder(null),
-      navigatorKey: _navigatorKey,
-      routes: {
-        '/lock-screen': (context) => _lockScreen,
-        '/unlocked': (context) =>
-            widget.builder(ModalRoute.of(context)!.settings.arguments)
-      },
-      theme: widget.theme,
+    return widget.appBuilder.call(
+      _navigatorKey,
+      widget.enabled ? AppLock.lockScreenRoute : widget.initialRoute,
+      widget.routes
+        ..addAll({AppLock.lockScreenRoute: (context) => _lockScreen}),
     );
   }
 
@@ -163,13 +189,13 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   /// Manually show the [lockScreen].
   Future<void> showLockScreen() {
     _isLocked = true;
-    return _navigatorKey.currentState!.pushNamed('/lock-screen');
+    return _navigatorKey.currentState!.pushNamed(AppLock.lockScreenRoute);
   }
 
   void _didUnlockOnAppLaunch(Object? args) {
     _didUnlockForAppLaunch = true;
     _navigatorKey.currentState!
-        .pushReplacementNamed('/unlocked', arguments: args);
+        .pushReplacementNamed(widget.initialRoute, arguments: args);
   }
 
   void _didUnlockOnAppPaused() {
@@ -177,3 +203,9 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     _navigatorKey.currentState!.pop();
   }
 }
+
+typedef LockedAppBuilder = Widget Function(
+  GlobalKey<NavigatorState> navigatorKey,
+  String initialRoute,
+  Map<String, Widget Function(BuildContext)> routes,
+);
