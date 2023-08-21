@@ -52,6 +52,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   late bool _didUnlockForAppLaunch;
   late bool _isLocked;
   late bool _enabled;
+  late bool _initiallyEnabled;
 
   Timer? _backgroundLockLatencyTimer;
 
@@ -62,6 +63,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     _didUnlockForAppLaunch = !widget.enabled;
     _isLocked = false;
     _enabled = widget.enabled;
+    _initiallyEnabled = widget.enabled;
 
     super.initState();
   }
@@ -98,7 +100,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: widget.enabled ? _lockScreen : widget.builder(null),
+      home: _initiallyEnabled ? _lockScreen : widget.builder(null),
       navigatorKey: _navigatorKey,
       routes: {
         '/lock-screen': (context) => _lockScreen,
