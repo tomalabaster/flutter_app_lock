@@ -8,11 +8,9 @@ class MyHomePage extends StatefulWidget {
   const MyHomePage({
     Key? key,
     required this.title,
-    this.data,
   }) : super(key: key);
 
   final String title;
-  final String? data;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -44,7 +42,8 @@ class _MyHomePageState extends State<MyHomePage> {
               '$_counter',
               style: Theme.of(context).textTheme.headline4,
             ),
-            Text('App unlocked with the following data: ${widget.data}'),
+            Text(
+                'App unlocked with the following data: ${AppLock.of(context)!.launchArg}'),
             ElevatedButton(
               key: const Key('EnableButton'),
               child: const Text('Set app lock enabled'),

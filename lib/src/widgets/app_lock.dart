@@ -24,11 +24,10 @@ import 'package:flutter/material.dart';
 /// the app is in the background state before the [lockScreen] widget should be
 /// shown upon returning. It defaults to instantly.
 class AppLock extends StatefulWidget {
-  final Widget Function(Object? arg) builder;
+  final Widget Function(BuildContext context, Object? launchArg) builder;
   final Widget lockScreen;
   final bool enabled;
   final Duration backgroundLockLatency;
-  final ThemeData? theme;
 
   const AppLock({
     Key? key,
@@ -36,7 +35,6 @@ class AppLock extends StatefulWidget {
     required this.lockScreen,
     this.enabled = true,
     this.backgroundLockLatency = const Duration(seconds: 0),
-    this.theme,
   }) : super(key: key);
 
   static _AppLockState? of(BuildContext context) =>
@@ -54,6 +52,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   late bool _enabled;
 
   Timer? _backgroundLockLatencyTimer;
+
+  Object? _launchArg;
 
   @override
   void initState() {
@@ -96,16 +96,20 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: widget.enabled ? _lockScreen : widget.builder(null),
-      navigatorKey: _navigatorKey,
-      routes: {
-        '/lock-screen': (context) => _lockScreen,
-        '/unlocked': (context) =>
-            widget.builder(ModalRoute.of(context)!.settings.arguments)
+    return Navigator(
+      key: _navigatorKey,
+      initialRoute: widget.enabled ? '/lock-screen' : '/unlocked',
+      onGenerateRoute: (settings) {
+        if (settings.name == '/lock-screen') {
+          return MaterialPageRoute(builder: (context) => _lockScreen);
+        } else if (settings.name == '/unlocked') {
+          return MaterialPageRoute(
+            builder: (context) => widget.builder(context, _launchArg),
+          );
+        }
+
+        return null;
       },
-      theme: widget.theme,
     );
   }
 
@@ -120,15 +124,15 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   /// or instantiates widget returned from the [builder] method if the app is cold
   /// launched.
   ///
-  /// [args] is an optional argument which will get passed to the [builder] method
+  /// [launchArg] is an optional argument which will get passed to the [builder] method
   /// when built. Use this when you want to inject objects created from the
   /// [lockScreen] in to the rest of your app so you can better guarantee that some
   /// objects, services or databases are already instantiated before using them.
-  void didUnlock([Object? args]) {
+  void didUnlock([Object? launchArg]) {
     if (_didUnlockForAppLaunch) {
       _didUnlockOnAppPaused();
     } else {
-      _didUnlockOnAppLaunch(args);
+      _didUnlockOnAppLaunch(launchArg);
     }
   }
 
@@ -166,10 +170,14 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     return _navigatorKey.currentState!.pushNamed('/lock-screen');
   }
 
-  void _didUnlockOnAppLaunch(Object? args) {
+  /// An argument that is passed to [didUnlock] for the first time after showing
+  /// [lockScreen] on launch.
+  Object? get launchArg => _launchArg;
+
+  void _didUnlockOnAppLaunch(Object? launchArg) {
+    _launchArg = launchArg;
     _didUnlockForAppLaunch = true;
-    _navigatorKey.currentState!
-        .pushReplacementNamed('/unlocked', arguments: args);
+    _navigatorKey.currentState!.pushReplacementNamed('/unlocked');
   }
 
   void _didUnlockOnAppPaused() {
