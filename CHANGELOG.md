@@ -1,6 +1,7 @@
 ## 4.0.1 - 25th December 2023
 
 - **Breaking change:** requires Flutter 3.16.0 or greater
+- **Breaking change:** requires Dart 3.0.0 or greater
 - Using `AppLifecycleState.hidden` instead of `AppLifecycleState.paused`
 - Package upgrades and deprecation fixes
 

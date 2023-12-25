@@ -4,7 +4,7 @@ version: 4.0.1
 homepage: https://github.com/tomalabaster/flutter_app_lock
 
 environment:
-  sdk: ">=2.17.0 <3.0.0"
+  sdk: ">=3.0.0 <4.0.0"
   flutter: ">=3.16.0"
 
 dependencies:
