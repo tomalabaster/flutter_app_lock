@@ -51,6 +51,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   late bool _isLocked;
   late bool _enabled;
 
+  late Duration backgroundLockLatency;
+
   Timer? _backgroundLockLatencyTimer;
 
   Object? _launchArg;
@@ -62,6 +64,8 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     _didUnlockForAppLaunch = !widget.enabled;
     _isLocked = false;
     _enabled = widget.enabled;
+
+    backgroundLockLatency = widget.backgroundLockLatency;
 
     super.initState();
   }
@@ -75,7 +79,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
     if (state == AppLifecycleState.hidden &&
         (!_isLocked && _didUnlockForAppLaunch)) {
       _backgroundLockLatencyTimer =
-          Timer(widget.backgroundLockLatency, () => showLockScreen());
+          Timer(backgroundLockLatency, () => showLockScreen());
     }
 
     if (state == AppLifecycleState.resumed) {

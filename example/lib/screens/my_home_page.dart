@@ -70,6 +70,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               },
             ),
+            const LatencyEditor(
+              key: Key('LatencyEditor'),
+            ),
           ],
         ),
       ),
@@ -79,5 +82,59 @@ class _MyHomePageState extends State<MyHomePage> {
         child: const Icon(Icons.add),
       ),
     );
+  }
+}
+
+class LatencyEditor extends StatefulWidget {
+  const LatencyEditor({Key? key}) : super(key: key);
+
+  @override
+  State<LatencyEditor> createState() => _LatencyEditorState();
+}
+
+class _LatencyEditorState extends State<LatencyEditor> {
+  late TextEditingController backgroundLockLatencyEditingController;
+
+  @override
+  void initState() {
+    backgroundLockLatencyEditingController = TextEditingController(text: "0");
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
+          onPressed: _setBackgroundLockLatency,
+          child: const Text('Set backgroundLockLatency to'),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 8.0),
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 20),
+            child: TextField(
+              textAlign: TextAlign.right,
+              controller: backgroundLockLatencyEditingController,
+            ),
+          ),
+        ),
+        const Text('s'),
+      ],
+    );
+  }
+
+  void _setBackgroundLockLatency() {
+    try {
+      int latencyInSeconds =
+          int.parse(backgroundLockLatencyEditingController.text);
+      AppLock.of(context)?.backgroundLockLatency =
+          Duration(seconds: latencyInSeconds);
+    } catch (e) {
+      if (kDebugMode) {
+        print(e);
+      }
+    }
   }
 }
