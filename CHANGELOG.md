@@ -1,3 +1,9 @@
+## 4.0.1 - 25th December 2023
+
+- **Breaking change:** requires Flutter 3.16.0 or greater
+- Using `AppLifecycleState.hidden` instead of `AppLifecycleState.paused`
+- Package upgrades and deprecation fixes
+
 ## 4.0.0 - 25th December 2023
 
 Version `4.0.0` general availabilty, see changes in `4.0.0-dev.0 - 21st November 2022` below.
