@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_app_lock/flutter_app_lock.dart';
 
 class LockScreen extends StatefulWidget {
-  const LockScreen({
-    Key? key,
-  }) : super(key: key);
+  const LockScreen({super.key});
 
   @override
   _LockScreenState createState() => _LockScreenState();

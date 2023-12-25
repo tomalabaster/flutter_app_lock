@@ -6,9 +6,9 @@ import 'package:flutter_app_lock/flutter_app_lock.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({
-    Key? key,
+    super.key,
     required this.title,
-  }) : super(key: key);
+  });
 
   final String title;
 
@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(
               '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineMedium,
             ),
             Text(
                 'App unlocked with the following data: ${AppLock.of(context)!.launchArg}'),

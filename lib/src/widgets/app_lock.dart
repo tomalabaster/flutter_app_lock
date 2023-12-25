@@ -30,12 +30,12 @@ class AppLock extends StatefulWidget {
   final Duration backgroundLockLatency;
 
   const AppLock({
-    Key? key,
+    super.key,
     required this.builder,
     required this.lockScreen,
     this.enabled = true,
     this.backgroundLockLatency = const Duration(seconds: 0),
-  }) : super(key: key);
+  });
 
   static _AppLockState? of(BuildContext context) =>
       context.findAncestorStateOfType<_AppLockState>();
@@ -72,7 +72,7 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
       return;
     }
 
-    if (state == AppLifecycleState.paused &&
+    if (state == AppLifecycleState.hidden &&
         (!_isLocked && _didUnlockForAppLaunch)) {
       _backgroundLockLatencyTimer =
           Timer(widget.backgroundLockLatency, () => showLockScreen());
@@ -114,9 +114,9 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
   }
 
   Widget get _lockScreen {
-    return WillPopScope(
+    return PopScope(
+      canPop: false,
       child: widget.lockScreen,
-      onWillPop: () => Future.value(false),
     );
   }
 
