@@ -40,7 +40,7 @@ Future<void> disableAfterLaunch(WidgetTester tester) async {
 
 Future<void> enterBackgroundForDuration(
     WidgetTester tester, Duration duration) async {
-  tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+  tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
 
   await Future.delayed(duration);
 
