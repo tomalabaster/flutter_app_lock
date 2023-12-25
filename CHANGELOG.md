@@ -1,3 +1,7 @@
+## 4.0.0 - 25th December 2023
+
+Version `4.0.0` general availabilty, see changes in `4.0.0-dev.0 - 21st November 2022` below.
+
 ## 4.0.0-dev.0 - 21st November 2022
 
 **`MaterialApp` is no longer used under the hood!**
