@@ -9,10 +9,10 @@ class MyApp extends StatelessWidget {
   final Duration backgroundLockLatency;
 
   const MyApp({
-    Key? key,
+    super.key,
     this.enabled = false,
     this.backgroundLockLatency = const Duration(seconds: 30),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
