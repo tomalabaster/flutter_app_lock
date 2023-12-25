@@ -1,3 +1,49 @@
+## 4.0.0-dev.0 - 21st November 2022
+
+**`MaterialApp` is no longer used under the hood!**
+
+Version `4.0.0` uses a `Navigator` directly instead of a `MaterialApp`. The new required use of `AppLock` allows you to make use of your own `MaterialApp`'s theming.
+
+Old:
+```dart
+void main() {
+  runApp(AppLock(
+    builder: (arg) => MyApp(data: arg),
+    lockScreen: LockScreen(),
+  ));
+}
+```
+
+New:
+```dart
+void main() {
+  runApp(MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  ...
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      ...
+      builder: (context, child) => AppLock(
+        builder: (context, arg) => child!,
+        lockScreen: LockScreen(),
+      ),
+      ...
+    );
+  }
+}
+```
+
+**Breaking changes:**
+- `builder` now requires a callback which receives a `BuildContext` and an `Object?`
+- `theme` is no longer available
+
+**Non-breaking changes:**
+- `AppLock` now exposes a `launchArg` property which is an `Object?`
+
 ## 3.0.0 - 28th October 2022
 
 Flutter 3 support!
