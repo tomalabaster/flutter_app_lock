@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       ),
       builder: (context, child) => AppLock(
         builder: (context, arg) => child!,
-        lockScreen: const LockScreen(
+        lockScreenBuilder: (context) => const LockScreen(
           key: Key('LockScreen'),
         ),
         enabled: enabled,
