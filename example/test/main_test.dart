@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:flutter_app_lock_example/main.dart' as app;
+import 'package:integration_test/integration_test.dart';
 
 final myHomePage = find.byKey(const Key('MyHomePage'));
 final lockScreen = find.byKey(const Key('LockScreen'));
@@ -41,7 +42,11 @@ Future<void> enterBackgroundForDuration(
     WidgetTester tester, Duration duration) async {
   tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.hidden);
 
-  await Future.delayed(duration);
+  if (tester.binding is IntegrationTestWidgetsFlutterBinding) {
+    await Future.delayed(duration);
+  } else {
+    await tester.pumpAndSettle(duration);
+  }
 
   tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
 
@@ -188,10 +193,10 @@ void main() {
       testWidgets('The lock screen is not visible',
           (WidgetTester tester) async {
         app.main(
-            enabled: false, backgroundLockLatency: const Duration(seconds: 1));
+            enabled: false, backgroundLockLatency: const Duration(seconds: 2));
 
         await enableAfterLaunch(tester);
-        await enterBackgroundForDuration(tester, const Duration(seconds: 0));
+        await enterBackgroundForDuration(tester, const Duration(seconds: 1));
 
         expect(lockScreen, findsNothing);
       });
