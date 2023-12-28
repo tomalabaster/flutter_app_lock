@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_app_lock/src/no_animation_page.dart';
 
 /// A widget which handles app lifecycle events for showing and hiding a lock screen.
 /// This should wrap around a `MyApp` widget (or equivalent).
@@ -111,11 +112,20 @@ class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
       onPopPage: (route, result) => route.didPop(result),
       pages: [
         if (_didUnlockForAppLaunch)
-          MaterialPage(child: widget.builder(context, _launchArg)),
+          MaterialPage(
+            key: const ValueKey('App'),
+            child: widget.builder(context, _launchArg),
+          ),
         if (_locked)
-          MaterialPage(child: _lockScreen)
+          MaterialPage(
+            key: const ValueKey('LockScreen'),
+            child: _lockScreen,
+          )
         else if (_inactive && widget.inactiveBuilder != null)
-          MaterialPage(child: widget.inactiveBuilder!(context)),
+          NoAnimationPage(
+            key: const ValueKey('InactiveScreen'),
+            child: widget.inactiveBuilder!(context),
+          ),
       ],
     );
   }
