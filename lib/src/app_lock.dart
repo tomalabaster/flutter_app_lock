@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'dart:async';
 
 import 'package:flutter/material.dart';
@@ -44,14 +42,14 @@ class AppLock extends StatefulWidget {
     this.backgroundLockLatency = Duration.zero,
   }) : assert(lockScreen != null || lockScreenBuilder != null);
 
-  static _AppLockState? of(BuildContext context) =>
-      context.findAncestorStateOfType<_AppLockState>();
+  static AppLockState? of(BuildContext context) =>
+      context.findAncestorStateOfType<AppLockState>();
 
   @override
-  _AppLockState createState() => _AppLockState();
+  AppLockState createState() => AppLockState();
 }
 
-class _AppLockState extends State<AppLock> with WidgetsBindingObserver {
+class AppLockState extends State<AppLock> with WidgetsBindingObserver {
   late bool _didUnlockForAppLaunch;
   late bool _locked;
   late bool _enabled;
