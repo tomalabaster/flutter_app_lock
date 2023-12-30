@@ -6,12 +6,14 @@ import '../screens/my_home_page.dart';
 
 class MyApp extends StatelessWidget {
   final bool enabled;
+
+  @visibleForTesting
   final Duration backgroundLockLatency;
 
   const MyApp({
     super.key,
     this.enabled = false,
-    this.backgroundLockLatency = const Duration(seconds: 30),
+    required this.backgroundLockLatency,
   });
 
   @override
@@ -28,6 +30,12 @@ class MyApp extends StatelessWidget {
         ),
         enabled: enabled,
         backgroundLockLatency: backgroundLockLatency,
+        inactiveBuilder: (context) => const Scaffold(
+          key: Key('InactiveScreen'),
+          body: Center(
+            child: FlutterLogo(size: 80),
+          ),
+        ),
       ),
       home: const MyHomePage(
         key: Key('MyHomePage'),
