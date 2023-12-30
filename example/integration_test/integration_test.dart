@@ -155,7 +155,7 @@ void main() {
               backgroundLockLatency: const Duration(seconds: 1));
 
           await enableAfterLaunch(tester);
-          await enterBackgroundForDuration(tester, const Duration(seconds: 1));
+          await enterBackgroundForDuration(tester, const Duration(seconds: 2));
 
           expect(lockScreen, findsOneWidget);
         });
@@ -262,7 +262,7 @@ void main() {
 
         await enterCorrectPassword(tester);
         await disableAfterLaunch(tester);
-        await enterBackgroundForDuration(tester, const Duration(seconds: 1));
+        await enterBackgroundForDuration(tester, const Duration(seconds: 2));
 
         expect(lockScreen, findsNothing);
       });
@@ -291,7 +291,7 @@ void main() {
             enabled: false, backgroundLockLatency: const Duration(seconds: 1));
 
         await enableAfterLaunch(tester);
-        await enterBackgroundForDuration(tester, const Duration(seconds: 1));
+        await enterBackgroundForDuration(tester, const Duration(seconds: 2));
 
         expect(lockScreen, findsOneWidget);
       });
