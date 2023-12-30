@@ -1,3 +1,10 @@
+## 4.1.0 - 30th December 2023
+
+- Inactive state!
+  - When the app becomes inactive (e.g. viewing the device's recent app switcher or notification center) you can now show a custom screen (see [issue #6](https://github.com/tomalabaster/flutter_app_lock/issues/6) for limitations)
+  - This can be used instead of or along side the existing lock screen mechanism
+- **Deprecation:** `lockScreen` is now deprecated and will be removed in the next major version, please use `lockScreenBuilder` instead (closes [issue #23](https://github.com/tomalabaster/flutter_app_lock/issues/23))
+
 ## 4.0.1 - 25th December 2023
 
 - **Breaking change:** requires Flutter 3.16.0 or greater

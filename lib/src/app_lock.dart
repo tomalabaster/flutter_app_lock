@@ -40,7 +40,10 @@ class AppLock extends StatefulWidget {
     this.inactiveBuilder,
     this.enabled = true,
     this.backgroundLockLatency = Duration.zero,
-  }) : assert(lockScreen != null || lockScreenBuilder != null);
+  }) : assert(
+            (lockScreen == null && lockScreenBuilder != null) ||
+                (lockScreen != null && lockScreenBuilder == null),
+            'Only 1 of either `lockScreenBuilder` or `lockScreen` should be set.');
 
   static AppLockState? of(BuildContext context) =>
       context.findAncestorStateOfType<AppLockState>();
