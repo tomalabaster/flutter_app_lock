@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       ...,
       builder: (context, child) => AppLock(
         builder: (context, arg) => child!,
-        lockScreen: LockScreen(),
+        lockScreenBuilder: (context) => LockScreen(),
       ),
     );
   }
@@ -55,7 +55,7 @@ This will now make the `MaterialApp`'s `Navigator` or `Router` the top most widg
 
 ### Theme
 
-Because `AppLock` is now expected to be returned within your `MaterialApp`'s `builder` method, your existing `theme` and `theme` variants will now style the widget passed to `lockScreen` automatically.
+Because `AppLock` is expected to be returned within your `MaterialApp`'s `builder` method, your existing `theme` and `theme` variants will style the widget returned from `lockScreenBuilder` automatically.
 
 ```dart
 MaterialApp(
@@ -65,37 +65,37 @@ MaterialApp(
   ),
   builder: (context, child) => AppLock(
     builder: (context, arg) => child!,
-    lockScreen: LockScreen(),
+    lockScreenBuilder: (context) => LockScreen(),
   ),
 );
 ```
 
 ## Enabling and disabling
 
-It is possible to enable and disable the `lockScreen` on app launch and on-demand.
+It is possible to enable and disable the showing of the widget returned from `lockScreenBuilder` on app launch and on-demand.
 
 ```dart
 MaterialApp(
   ...,
   builder: (context, child) => AppLock(
     builder: (context, arg) => child!,
-    lockScreen: LockScreen(),
+    lockScreenBuilder: (context) => LockScreen(),
     enabled: false,
   ),
 );
 ```
 
-The above will cause `child` (your `MaterialApp`'s `Navigator` or `Router`) to be built instantly and `lockScreen` will never be shown. The default for `enabled` is `true`.
+The above will cause `child` (your `MaterialApp`'s `Navigator` or `Router`) to be built instantly and the widget returned from `lockScreenBuilder` will never be shown. The default for `enabled` is `true`.
 
-You can then enable `lockScreen` later on by doing:
+You can then enable the showing of the widget returned from `lockScreenBuilder` later on by doing:
 
 ```dart
 AppLock.of(context)!.enable();
 ```
 
-This will now cause the `lockScreen` to be shown on app pauses.
+This will now cause the widget returned from `lockScreenBuilder` to be shown on app pauses.
 
-If you wanted to disable the `lockScreen` again you can simply do:
+If you wanted to disable the showing of the widget returned from `lockScreenBuilder` again you can simply do:
 
 ```dart
 AppLock.of(context)!.disable();
@@ -110,7 +110,7 @@ AppLock.of(context)!.setEnabled(false);
 
 ## Passing arguments
 
-In some scenarios, it might be appropriate to unlock a database or create some other objects from the `lockScreen` and then expose them to your app further down the tree, so you can better guarantee that services are instantiated or databases are opened/unlocked.
+In some scenarios, it might be appropriate to unlock a database or create some other objects from the widget returned from `lockScreenBuilder` and then expose them to your app further down the tree, so you can better guarantee that services are instantiated or databases are opened/unlocked.
 
 You can do this by passing in an argument to the `didUnlock` method on `AppLock`:
 
@@ -127,7 +127,7 @@ MaterialApp(
   ...,
   builder: (context, child) => AppLock(
     builder: (context, arg) => child!, // arg is the `database` object passed in to `didUnlock`
-    lockScreen: LockScreen(),
+    lockScreenBuilder: (context) => LockScreen(),
   ),
 );
 ```
@@ -167,6 +167,24 @@ MaterialApp(
 ```
 
 The above example allows the app to be in the background for up to 30 seconds without requiring the lock screen to be shown.
+
+## Inactive statuses (e.g. app switcher)
+
+When the app becomes "inactive", for example by launching the device app switcher or device notification center, you can now configure a widget to be shown when this occurs:
+
+```dart
+MaterialApp(
+  ...,
+  builder: (context, child) => AppLock(
+    ...,
+    inactiveBuilder: (context) => InactiveScreen(),
+  ),
+);
+```
+
+`InactiveScreen` is your own widget implementing your own requirements for a screen shown while the app is inactive.
+
+[There are limitations to this as noted on issue #6 on GitHub](https://github.com/tomalabaster/flutter_app_lock/issues/6#issuecomment-1872616800).
 
 ## Tests
 
