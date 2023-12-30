@@ -85,6 +85,7 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
     }
 
     if (state == AppLifecycleState.hidden && !_locked) {
+      _backgroundLockLatencyTimer?.cancel();
       _backgroundLockLatencyTimer =
           Timer(widget.backgroundLockLatency, () => showLockScreen());
     }
