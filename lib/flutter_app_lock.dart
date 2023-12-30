@@ -1,3 +1,3 @@
 library flutter_app_lock;
 
-export 'src/widgets/app_lock.dart';
+export 'src/app_lock.dart';
