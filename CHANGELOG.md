@@ -1,3 +1,7 @@
+## 4.1.1+1 - 30th December 2023
+
+- Updates to README
+
 ## 4.1.1 - 30th December 2023
 
 - Fix for app still locking if the app resumes before the end of the background lock latency
