@@ -31,6 +31,7 @@ class MyApp extends StatelessWidget {
         enabled: enabled,
         backgroundLockLatency: backgroundLockLatency,
         inactiveBuilder: (context) => const Scaffold(
+          key: Key('InactiveScreen'),
           body: Center(
             child: FlutterLogo(size: 80),
           ),

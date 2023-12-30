@@ -6,6 +6,7 @@ import 'package:integration_test/integration_test.dart';
 
 final myHomePage = find.byKey(const Key('MyHomePage'));
 final lockScreen = find.byKey(const Key('LockScreen'));
+final inactiveScreen = find.byKey(const Key('InactiveScreen'));
 final showButton = find.byKey(const Key('ShowButton'));
 final passwordField = find.byKey(const Key('PasswordField'));
 final unlockButton = find.byKey(const Key('UnlockButton'));
@@ -48,6 +49,25 @@ Future<void> enterBackgroundForDuration(
     await tester.pumpAndSettle(duration);
   }
 
+  tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+
+  await tester.pumpAndSettle();
+}
+
+Future<void> becomeInactiveForDuration(
+    WidgetTester tester, Duration duration) async {
+  tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.inactive);
+
+  if (tester.binding is IntegrationTestWidgetsFlutterBinding) {
+    await Future.delayed(duration);
+  } else {
+    await tester.pumpAndSettle(duration);
+  }
+
+  await tester.pumpAndSettle();
+}
+
+Future<void> becomeResumed(WidgetTester tester) async {
   tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
 
   await tester.pumpAndSettle();
@@ -125,17 +145,50 @@ void main() {
     });
 
     group('When enabling it after launch', () {
-      testWidgets(
-          'The lock screen is shown when the app has been in background for longer than the specified duration',
-          (WidgetTester tester) async {
-        app.main(
-            enabled: true, backgroundLockLatency: const Duration(seconds: 1));
+      group(
+          'And the app has been in the background for longer than the specified duration',
+          () {
+        testWidgets('The lock screen should be shown',
+            (WidgetTester tester) async {
+          app.main(
+              enabled: true, backgroundLockLatency: const Duration(seconds: 1));
 
-        await enterCorrectPassword(tester);
-        await enableAfterLaunch(tester);
-        await enterBackgroundForDuration(tester, const Duration(seconds: 1));
+          await enterCorrectPassword(tester);
+          await enableAfterLaunch(tester);
+          await enterBackgroundForDuration(tester, const Duration(seconds: 1));
 
-        expect(lockScreen, findsOneWidget);
+          expect(lockScreen, findsOneWidget);
+        });
+      });
+
+      group('And the app becomes inactive', () {
+        group('And there is an inactive builder set', () {
+          testWidgets('The widget from the inactive builder should be shown',
+              (widgetTester) async {
+            app.main(
+                enabled: true,
+                backgroundLockLatency: const Duration(seconds: 2));
+
+            await enterCorrectPassword(widgetTester);
+            await enableAfterLaunch(widgetTester);
+            await becomeInactiveForDuration(
+                widgetTester, const Duration(seconds: 1));
+
+            expect(inactiveScreen, findsOne);
+          });
+
+          testWidgets('The lock screen should not be shown',
+              (widgetTester) async {
+            app.main(
+                enabled: true,
+                backgroundLockLatency: const Duration(seconds: 2));
+
+            await becomeInactiveForDuration(
+                widgetTester, const Duration(seconds: 1));
+
+            expect(lockScreen, findsNothing);
+          });
+        });
       });
     });
 
@@ -148,6 +201,34 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(lockScreen, findsOneWidget);
+      });
+    });
+
+    group('When the app becomes inactive', () {
+      group('And there is an inactive builder set', () {
+        testWidgets('The widget from the inactive builder should not be shown',
+            (widgetTester) async {
+          app.main(
+              enabled: false,
+              backgroundLockLatency: const Duration(seconds: 2));
+
+          await becomeInactiveForDuration(
+              widgetTester, const Duration(seconds: 1));
+
+          expect(inactiveScreen, findsNothing);
+        });
+
+        testWidgets('The lock screen should not be shown',
+            (widgetTester) async {
+          app.main(
+              enabled: false,
+              backgroundLockLatency: const Duration(seconds: 2));
+
+          await becomeInactiveForDuration(
+              widgetTester, const Duration(seconds: 1));
+
+          expect(lockScreen, findsNothing);
+        });
       });
     });
   });
@@ -213,6 +294,32 @@ void main() {
         await enterBackgroundForDuration(tester, const Duration(seconds: 1));
 
         expect(lockScreen, findsOneWidget);
+      });
+    });
+
+    group('When the app becomes inactive', () {
+      group('And there is an inactive builder set', () {
+        testWidgets('The widget from the inactive builder should not be shown',
+            (widgetTester) async {
+          app.main(
+              enabled: true, backgroundLockLatency: const Duration(seconds: 2));
+
+          await becomeInactiveForDuration(
+              widgetTester, const Duration(seconds: 1));
+
+          expect(inactiveScreen, findsNothing);
+        });
+
+        testWidgets('The lock screen should still be shown',
+            (widgetTester) async {
+          app.main(
+              enabled: true, backgroundLockLatency: const Duration(seconds: 2));
+
+          await becomeInactiveForDuration(
+              widgetTester, const Duration(seconds: 1));
+
+          expect(lockScreen, findsOneWidget);
+        });
       });
     });
   });
