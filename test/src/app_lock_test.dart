@@ -26,6 +26,20 @@ void enableAppLockAfterLaunch(WidgetTester widgetTester) {
   widgetTester.state<AppLockState>(find.byType(AppLock)).enable();
 }
 
+OverlayState appLockOverlayState(WidgetTester widgetTester) =>
+    widgetTester.firstState(find.byType(Overlay));
+
+OverlayEntry appOverlayEntry(WidgetTester widgetTester) =>
+    (widgetTester.state(find.byType(AppLock)) as AppLockState).appOverlayEntry;
+
+OverlayEntry lockScreenOverlayEntry(WidgetTester widgetTester) =>
+    (widgetTester.state(find.byType(AppLock)) as AppLockState)
+        .lockScreenOverlayEntry;
+
+OverlayEntry inactiveOverlayEntry(WidgetTester widgetTester) =>
+    (widgetTester.state(find.byType(AppLock)) as AppLockState)
+        .inactiveOverlayEntry;
+
 void main() {
   group('Given an AppLock widget', () {
     group('When it is enabled', () {
@@ -54,20 +68,31 @@ void main() {
       testWidgets('The lock screen should be shown', (widgetTester) async {
         await widgetTester.pumpWidget(sut);
 
-        expect(find.byKey(const Key('LockScreen')), findsOneWidget);
+        await widgetTester.pumpAndSettle();
+
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The unlocked app should not be shown', (widgetTester) async {
         await widgetTester.pumpWidget(sut);
 
-        expect(find.byKey(const Key('Unlocked')), findsNothing);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
           (widgetTester) async {
         await widgetTester.pumpWidget(sut);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
 
@@ -103,7 +128,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('LockScreen')), findsOneWidget);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The unlocked app should not be shown', (widgetTester) async {
@@ -116,7 +144,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('Unlocked')), findsNothing);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
@@ -130,7 +161,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
 
@@ -169,7 +203,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('LockScreen')), findsOneWidget);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The unlocked app should not be shown', (widgetTester) async {
@@ -182,7 +219,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('Unlocked')), findsNothing);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
@@ -196,7 +236,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
 
@@ -235,7 +278,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('LockScreen')), findsOneWidget);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The unlocked app should not be shown', (widgetTester) async {
@@ -249,7 +295,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('Unlocked')), findsNothing);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
@@ -264,7 +313,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
 
@@ -309,7 +361,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('LockScreen')), findsOneWidget);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The unlocked app should not be shown', (widgetTester) async {
@@ -328,7 +383,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('Unlocked')), findsNothing);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
@@ -348,7 +406,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
 
@@ -393,7 +454,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('LockScreen')), findsOneWidget);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The unlocked app should not be shown', (widgetTester) async {
@@ -412,7 +476,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('Unlocked')), findsNothing);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
@@ -432,7 +499,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
 
@@ -462,20 +532,29 @@ void main() {
       testWidgets('The lock screen should not be shown', (widgetTester) async {
         await widgetTester.pumpWidget(sut);
 
-        expect(find.byKey(const Key('LockScreen')), findsNothing);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The unlocked app should be shown', (widgetTester) async {
         await widgetTester.pumpWidget(sut);
 
-        expect(find.byKey(const Key('Unlocked')), findsOneWidget);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
           (widgetTester) async {
         await widgetTester.pumpWidget(sut);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
 
@@ -513,7 +592,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('LockScreen')), findsNothing);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The unlocked app should be shown', (widgetTester) async {
@@ -528,7 +610,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('Unlocked')), findsOneWidget);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
@@ -544,7 +629,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
 
@@ -585,7 +673,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('LockScreen')), findsNothing);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The unlocked app should not be shown', (widgetTester) async {
@@ -600,7 +691,16 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('Unlocked')), findsNothing);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          true, // Ok as this is behind the lock screen overlay
+        );
+
+        expect(
+          appLockOverlayState(widgetTester)
+              .debugIsVisible(appOverlayEntry(widgetTester)),
+          false,
+        );
       });
 
       testWidgets('The inactive screen should be shown', (widgetTester) async {
@@ -615,7 +715,10 @@ void main() {
 
         await setAppLifecycleToInactive(widgetTester);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsOneWidget);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
     });
 
@@ -657,7 +760,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('LockScreen')), findsNothing);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The unlocked app should be shown', (widgetTester) async {
@@ -673,7 +779,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('Unlocked')), findsOneWidget);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
@@ -690,7 +799,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
 
@@ -737,7 +849,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('LockScreen')), findsOneWidget);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The unlocked app should not be shown', (widgetTester) async {
@@ -758,7 +873,16 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('Unlocked')), findsNothing);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          true, // Ok as this is behind the lock screen overlay
+        );
+
+        expect(
+          appLockOverlayState(widgetTester)
+              .debugIsVisible(appOverlayEntry(widgetTester)),
+          false,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
@@ -780,7 +904,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
 
@@ -827,7 +954,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('LockScreen')), findsNothing);
+        expect(
+          lockScreenOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
 
       testWidgets('The unlocked app should be shown', (widgetTester) async {
@@ -848,7 +978,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('Unlocked')), findsOneWidget);
+        expect(
+          appOverlayEntry(widgetTester).mounted,
+          true,
+        );
       });
 
       testWidgets('The inactive screen should not be shown',
@@ -870,7 +1003,10 @@ void main() {
         await setAppLifecycleToInactive(widgetTester);
         await setAppLifecycleToResumed(widgetTester);
 
-        expect(find.byKey(const Key('InactiveScreen')), findsNothing);
+        expect(
+          inactiveOverlayEntry(widgetTester).mounted,
+          false,
+        );
       });
     });
   });
