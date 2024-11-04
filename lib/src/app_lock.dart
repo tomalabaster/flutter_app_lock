@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_app_lock/src/no_animation_page.dart';
 
 /// A widget which handles app lifecycle events for showing and hiding a lock screen.
 /// This should wrap around a `MyApp` widget (or equivalent).
@@ -53,6 +52,12 @@ class AppLock extends StatefulWidget {
 }
 
 class AppLockState extends State<AppLock> with WidgetsBindingObserver {
+  late final GlobalKey<OverlayState> _overlayKey;
+
+  late OverlayEntry _appOverlayEntry;
+  late OverlayEntry _lockScreenOverlayEntry;
+  late OverlayEntry _inactiveOverlayEntry;
+
   late bool _didUnlockForAppLaunch;
   late bool _locked;
   late bool _enabled;
@@ -64,11 +69,35 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   Completer? _didUnlockCompleter;
 
+  @visibleForTesting
+  OverlayEntry get appOverlayEntry => _appOverlayEntry;
+
+  @visibleForTesting
+  OverlayEntry get lockScreenOverlayEntry => _lockScreenOverlayEntry;
+
+  @visibleForTesting
+  OverlayEntry get inactiveOverlayEntry => _inactiveOverlayEntry;
+
   @override
   void initState() {
     super.initState();
 
     WidgetsBinding.instance.addObserver(this);
+
+    _overlayKey = GlobalKey();
+
+    _appOverlayEntry = OverlayEntry(
+      maintainState: true,
+      builder: (context) => widget.builder(context, _launchArg),
+    );
+
+    _lockScreenOverlayEntry = OverlayEntry(
+      builder: (context) => _lockScreen,
+    );
+
+    _inactiveOverlayEntry = OverlayEntry(
+      builder: (context) => widget.inactiveBuilder!(context),
+    );
 
     _didUnlockForAppLaunch = !widget.enabled;
     _locked = widget.enabled;
@@ -95,8 +124,20 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
     }
 
     setState(() {
-      _inactive = state == AppLifecycleState.inactive;
+      _inactive = state == AppLifecycleState.inactive ||
+          state == AppLifecycleState.hidden ||
+          state == AppLifecycleState.paused;
     });
+
+    if (_inactive) {
+      if (!_locked &&
+          !_inactiveOverlayEntry.mounted &&
+          widget.inactiveBuilder != null) {
+        _overlayKey.currentState!.insert(_inactiveOverlayEntry);
+      }
+    } else if (!_inactive && _inactiveOverlayEntry.mounted) {
+      _inactiveOverlayEntry.remove();
+    }
   }
 
   @override
@@ -110,24 +151,14 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(
-      onPopPage: (route, result) => route.didPop(result),
-      pages: [
-        if (_didUnlockForAppLaunch)
-          MaterialPage(
-            key: const ValueKey('App'),
-            child: widget.builder(context, _launchArg),
-          ),
+    return Overlay(
+      key: _overlayKey,
+      initialEntries: [
+        if (_didUnlockForAppLaunch) _appOverlayEntry,
         if (_locked)
-          MaterialPage(
-            key: const ValueKey('LockScreen'),
-            child: _lockScreen,
-          )
+          _lockScreenOverlayEntry
         else if (_inactive && widget.inactiveBuilder != null)
-          NoAnimationPage(
-            key: const ValueKey('InactiveScreen'),
-            child: widget.inactiveBuilder!(context),
-          ),
+          _inactiveOverlayEntry,
       ],
     );
   }
@@ -197,6 +228,8 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
       _locked = true;
     });
 
+    _overlayKey.currentState!.insert(_lockScreenOverlayEntry);
+
     return _didUnlockCompleter!.future;
   }
 
@@ -210,11 +243,17 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
       _didUnlockForAppLaunch = true;
       _locked = false;
     });
+
+    _overlayKey.currentState!.insert(_appOverlayEntry);
+
+    _lockScreenOverlayEntry.remove();
   }
 
-  void _didUnlockOnAppPaused() {
+  void _didUnlockOnAppPaused() async {
     setState(() {
       _locked = false;
     });
+
+    _lockScreenOverlayEntry.remove();
   }
 }

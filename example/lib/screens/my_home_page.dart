@@ -35,8 +35,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            const Hero(
+              tag: 'CounterIntroText',
+              child: Material(
+                child: Text(
+                  'You have pushed the button this many times:',
+                ),
+              ),
             ),
             Text(
               '$_counter',
@@ -69,6 +74,31 @@ class _MyHomePageState extends State<MyHomePage> {
                   print('Did unlock!');
                 }
               },
+            ),
+            ElevatedButton(
+              key: const Key('HeroTest'),
+              child: const Text('Hero test'),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    body: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Hero(
+                            tag: 'CounterIntroText',
+                            child: Material(child: Text('Hero!')),
+                          ),
+                          ElevatedButton(
+                            child: const Text('Pop'),
+                            onPressed: () => Navigator.of(context).pop(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),
