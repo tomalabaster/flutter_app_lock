@@ -35,7 +35,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 1),
-            enabled: true,
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -80,7 +80,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 1),
-            enabled: true,
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -143,7 +143,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 1),
-            enabled: true,
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -208,7 +208,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 1),
-            enabled: true,
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -277,7 +277,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 1),
-            enabled: true,
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -361,7 +361,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 2),
-            enabled: true,
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -443,7 +443,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 1),
-            enabled: false,
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -488,7 +488,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 1),
-            enabled: false,
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -557,7 +557,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 1),
-            enabled: false,
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -628,7 +628,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 1),
-            enabled: false,
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -703,7 +703,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 1),
-            enabled: false,
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -793,7 +793,7 @@ void main() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
             backgroundLockLatency: const Duration(seconds: 2),
-            enabled: false,
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,

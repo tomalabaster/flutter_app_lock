@@ -27,7 +27,7 @@ class AppLock extends StatefulWidget {
   final Widget? lockScreen;
   final WidgetBuilder? lockScreenBuilder;
   final WidgetBuilder? inactiveBuilder;
-  final bool enabled;
+  final bool _initiallyEnabled;
   final Duration backgroundLockLatency;
 
   const AppLock({
@@ -38,12 +38,20 @@ class AppLock extends StatefulWidget {
     this.lockScreen,
     this.lockScreenBuilder,
     this.inactiveBuilder,
-    this.enabled = true,
+    @Deprecated(
+        'Use `initiallyEnabled` instead. `enabled` will be removed in version 5.0.0.')
+    bool? enabled,
+    bool? initiallyEnabled,
     this.backgroundLockLatency = Duration.zero,
-  }) : assert(
+  })  : _initiallyEnabled = initiallyEnabled ?? enabled ?? true,
+        assert(
             (lockScreen == null && lockScreenBuilder != null) ||
                 (lockScreen != null && lockScreenBuilder == null),
-            'Only 1 of either `lockScreenBuilder` or `lockScreen` should be set.');
+            'Only 1 of either `lockScreenBuilder` or `lockScreen` should be set.'),
+        assert(
+            (enabled == null && initiallyEnabled != null) ||
+                (enabled != null && initiallyEnabled == null),
+            'Only 1 of either `initiallyEnabled` or `enabled` should be set.');
 
   static AppLockState? of(BuildContext context) =>
       context.findAncestorStateOfType<AppLockState>();
@@ -70,9 +78,9 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
-    _didUnlockForAppLaunch = !widget.enabled;
-    _locked = widget.enabled;
-    _enabled = widget.enabled;
+    _didUnlockForAppLaunch = !widget._initiallyEnabled;
+    _locked = widget._initiallyEnabled;
+    _enabled = widget._initiallyEnabled;
     _inactive = false;
   }
 

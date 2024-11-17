@@ -5,14 +5,14 @@ import '../screens/lock_screen.dart';
 import '../screens/my_home_page.dart';
 
 class MyApp extends StatelessWidget {
-  final bool enabled;
+  final bool initiallyEnabled;
 
   @visibleForTesting
   final Duration backgroundLockLatency;
 
   const MyApp({
     super.key,
-    this.enabled = false,
+    this.initiallyEnabled = false,
     required this.backgroundLockLatency,
   });
 
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         lockScreenBuilder: (context) => const LockScreen(
           key: Key('LockScreen'),
         ),
-        enabled: enabled,
+        initiallyEnabled: initiallyEnabled,
         backgroundLockLatency: backgroundLockLatency,
         inactiveBuilder: (context) => const Scaffold(
           key: Key('InactiveScreen'),
