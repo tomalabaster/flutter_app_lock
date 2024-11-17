@@ -28,7 +28,7 @@ class AppLock extends StatefulWidget {
   final WidgetBuilder? lockScreenBuilder;
   final WidgetBuilder? inactiveBuilder;
   final bool _initiallyEnabled;
-  final Duration backgroundLockLatency;
+  final Duration _initialBackgroundLockLatency;
 
   const AppLock({
     super.key,
@@ -42,8 +42,14 @@ class AppLock extends StatefulWidget {
         'Use `initiallyEnabled` instead. `enabled` will be removed in version 5.0.0.')
     bool? enabled,
     bool? initiallyEnabled,
-    this.backgroundLockLatency = Duration.zero,
+    @Deprecated(
+        'Use `initialBackgroundLockLatency` instead. `backgroundLockLatency` will be removed in version 5.0.0.')
+    Duration? backgroundLockLatency,
+    Duration? initialBackgroundLockLatency,
   })  : _initiallyEnabled = initiallyEnabled ?? enabled ?? true,
+        _initialBackgroundLockLatency = initialBackgroundLockLatency ??
+            backgroundLockLatency ??
+            Duration.zero,
         assert(
             (lockScreen == null && lockScreenBuilder != null) ||
                 (lockScreen != null && lockScreenBuilder == null),
@@ -51,7 +57,13 @@ class AppLock extends StatefulWidget {
         assert(
             (enabled == null && initiallyEnabled != null) ||
                 (enabled != null && initiallyEnabled == null),
-            'Only 1 of either `initiallyEnabled` or `enabled` should be set.');
+            'Only 1 of either `initiallyEnabled` or `enabled` should be set.'),
+        assert(
+            (backgroundLockLatency == null &&
+                    initialBackgroundLockLatency != null) ||
+                (backgroundLockLatency != null &&
+                    initialBackgroundLockLatency == null),
+            'Only 1 of either `initialBackgroundLockLatency` or `backgroundLockLatency` should be set.');
 
   static AppLockState? of(BuildContext context) =>
       context.findAncestorStateOfType<AppLockState>();
@@ -95,7 +107,7 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
     if (state == AppLifecycleState.hidden && !_locked) {
       _backgroundLockLatencyTimer?.cancel();
       _backgroundLockLatencyTimer =
-          Timer(widget.backgroundLockLatency, () => showLockScreen());
+          Timer(widget._initialBackgroundLockLatency, () => showLockScreen());
     }
 
     if (state == AppLifecycleState.resumed) {

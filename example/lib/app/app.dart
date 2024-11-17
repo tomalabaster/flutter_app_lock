@@ -8,12 +8,12 @@ class MyApp extends StatelessWidget {
   final bool initiallyEnabled;
 
   @visibleForTesting
-  final Duration backgroundLockLatency;
+  final Duration initialBackgroundLockLatency;
 
   const MyApp({
     super.key,
     this.initiallyEnabled = false,
-    required this.backgroundLockLatency,
+    required this.initialBackgroundLockLatency,
   });
 
   @override
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
           key: Key('LockScreen'),
         ),
         initiallyEnabled: initiallyEnabled,
-        backgroundLockLatency: backgroundLockLatency,
+        initialBackgroundLockLatency: initialBackgroundLockLatency,
         inactiveBuilder: (context) => const Scaffold(
           key: Key('InactiveScreen'),
           body: Center(

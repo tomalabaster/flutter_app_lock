@@ -152,7 +152,7 @@ void main() {
             (WidgetTester tester) async {
           app.main(
               initiallyEnabled: false,
-              backgroundLockLatency: const Duration(seconds: 1));
+              initialBackgroundLockLatency: const Duration(seconds: 1));
 
           await enableAfterLaunch(tester);
           await enterBackgroundForDuration(tester, const Duration(seconds: 2));
@@ -167,7 +167,7 @@ void main() {
               (widgetTester) async {
             app.main(
                 initiallyEnabled: false,
-                backgroundLockLatency: const Duration(seconds: 2));
+                initialBackgroundLockLatency: const Duration(seconds: 2));
 
             await enableAfterLaunch(widgetTester);
             await becomeInactiveForDuration(
@@ -180,7 +180,7 @@ void main() {
               (widgetTester) async {
             app.main(
                 initiallyEnabled: false,
-                backgroundLockLatency: const Duration(seconds: 2));
+                initialBackgroundLockLatency: const Duration(seconds: 2));
 
             await enableAfterLaunch(widgetTester);
             await becomeInactiveForDuration(
@@ -210,7 +210,7 @@ void main() {
             (widgetTester) async {
           app.main(
               initiallyEnabled: false,
-              backgroundLockLatency: const Duration(seconds: 2));
+              initialBackgroundLockLatency: const Duration(seconds: 2));
 
           await becomeInactiveForDuration(
               widgetTester, const Duration(seconds: 1));
@@ -222,7 +222,7 @@ void main() {
             (widgetTester) async {
           app.main(
               initiallyEnabled: false,
-              backgroundLockLatency: const Duration(seconds: 2));
+              initialBackgroundLockLatency: const Duration(seconds: 2));
 
           await becomeInactiveForDuration(
               widgetTester, const Duration(seconds: 1));
@@ -258,7 +258,7 @@ void main() {
           'The lock screen isn\'t shown when the app has been in background for longer than the specified duration',
           (WidgetTester tester) async {
         app.main(
-            initiallyEnabled: true, backgroundLockLatency: const Duration(seconds: 1));
+            initiallyEnabled: true, initialBackgroundLockLatency: const Duration(seconds: 1));
 
         await enterCorrectPassword(tester);
         await disableAfterLaunch(tester);
@@ -274,7 +274,7 @@ void main() {
       testWidgets('The lock screen is not visible',
           (WidgetTester tester) async {
         app.main(
-            initiallyEnabled: false, backgroundLockLatency: const Duration(seconds: 2));
+            initiallyEnabled: false, initialBackgroundLockLatency: const Duration(seconds: 2));
 
         await enableAfterLaunch(tester);
         await enterBackgroundForDuration(tester, const Duration(seconds: 1));
@@ -288,7 +288,7 @@ void main() {
         () {
       testWidgets('The lock screen is visible', (WidgetTester tester) async {
         app.main(
-            initiallyEnabled: false, backgroundLockLatency: const Duration(seconds: 1));
+            initiallyEnabled: false, initialBackgroundLockLatency: const Duration(seconds: 1));
 
         await enableAfterLaunch(tester);
         await enterBackgroundForDuration(tester, const Duration(seconds: 2));
@@ -302,7 +302,7 @@ void main() {
         testWidgets('The widget from the inactive builder should not be shown',
             (widgetTester) async {
           app.main(
-              initiallyEnabled: true, backgroundLockLatency: const Duration(seconds: 2));
+              initiallyEnabled: true, initialBackgroundLockLatency: const Duration(seconds: 2));
 
           await becomeInactiveForDuration(
               widgetTester, const Duration(seconds: 1));
@@ -313,7 +313,7 @@ void main() {
         testWidgets('The lock screen should still be shown',
             (widgetTester) async {
           app.main(
-              initiallyEnabled: true, backgroundLockLatency: const Duration(seconds: 2));
+              initiallyEnabled: true, initialBackgroundLockLatency: const Duration(seconds: 2));
 
           await becomeInactiveForDuration(
               widgetTester, const Duration(seconds: 1));
