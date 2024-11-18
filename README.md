@@ -2,9 +2,9 @@
 
 A Flutter package for showing a lock screen on app open and app pause.
 
-If the app is launching, the lock screen is shown first and then the rest of the app is instantiated once a successful login has occured.
+If the app is launching, the lock screen is shown first and then the rest of the app is instantiated once a successful unlock has occured.
 
-If the user is returning to the app after it has already launched, the login screen is shown on top of your app and can't be dismissed until another successful login.
+If the user is returning to the app after it has already launched, the lock screen is shown on top of your app and can't be dismissed until another successful unlock.
 
 ## Getting Started
 
@@ -13,7 +13,7 @@ In your flutter project add the dependency:
 ```yaml
 dependencies:
   ...
-  flutter_app_lock: ^4.2.0
+  flutter_app_lock: ^4.2.0+2
 ```
 
 For help getting started with Flutter, view the online documentation.
