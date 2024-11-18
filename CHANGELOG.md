@@ -1,3 +1,7 @@
+## 4.2.0+1 - 18th November 2024
+
+- Updates to README
+
 ## 4.2.0 - 18th November 2024
 
 - Ability to change the background lock latency from a descendant using `AppLock.of(context).setBackgroundLockLatency(duration);` (closes [pull request #27](https://github.com/tomalabaster/flutter_app_lock/pull/27))
