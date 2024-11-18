@@ -1,3 +1,11 @@
+## 4.2.0 - 18th November 2024
+
+- Ability to change the background lock latency from a descendant using `AppLock.of(context).setBackgroundLockLatency(duration);` (closes [pull request #27](https://github.com/tomalabaster/flutter_app_lock/pull/27))
+- **Deprecation:** `enabled` is now deprecated and will be removed in the next major versions, please use `initiallyEnabled` instead (provides clarity based on discussion on [pull request #27](https://github.com/tomalabaster/flutter_app_lock/pull/27))
+- **Deprecation:** `backgroundLockLatency` is now deprecated and will be removed in the next major versions, please use `initalBackgroundLockLatency` instead (provides clarity based on discussion on [pull request #27](https://github.com/tomalabaster/flutter_app_lock/pull/27))
+
+Thank you to [@jakobleck](https://github.com/jakobleck) and [@Bptmn](https://github.com/Bptmn) for helping to drive this forward through an initial pull request, suggestions and conversation!
+
 ## 4.1.1+1 - 30th December 2023
 
 - Updates to README
@@ -101,6 +109,8 @@ runApp(AppLock(
 
 `debugShowCheckedModeBanner` has also been set to false.
 
+Thank you to [@vishnukvmd](https://github.com/vishnukvmd) and [@dshukertjr](https://github.com/dshukertjr) for contributing these changes!
+
 ## 1.4.0+1 - 4th Oct 2020
 
 Minor updates to docs.
@@ -127,6 +137,8 @@ await AppLock.of(context).showLockScreen();
 
 print('Did unlock!');
 ```
+
+Thank you to [@rdev-software](https://github.com/rdev-software) for contributing this change!
 
 ## 1.3.0 - 16th May 2020
 
