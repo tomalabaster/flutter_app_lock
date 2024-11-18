@@ -1,14 +1,20 @@
-## 4.2.0+1 - 18th November 2024
+## 4.2.0+2 - 18th November 2024
 
-- Updates to README
-
-## 4.2.0 - 18th November 2024
+**NOTE:** Use 4.2.0 or 4.2.0+2 only as 4.2.0+1 was mistakenly published from a WIP branch
 
 - Ability to change the background lock latency from a descendant using `AppLock.of(context).setBackgroundLockLatency(duration);` (closes [pull request #27](https://github.com/tomalabaster/flutter_app_lock/pull/27))
 - **Deprecation:** `enabled` is now deprecated and will be removed in the next major versions, please use `initiallyEnabled` instead (provides clarity based on discussion on [pull request #27](https://github.com/tomalabaster/flutter_app_lock/pull/27))
 - **Deprecation:** `backgroundLockLatency` is now deprecated and will be removed in the next major versions, please use `initalBackgroundLockLatency` instead (provides clarity based on discussion on [pull request #27](https://github.com/tomalabaster/flutter_app_lock/pull/27))
 
 Thank you to [@jakobleck](https://github.com/jakobleck) and [@Bptmn](https://github.com/Bptmn) for helping to drive this forward through an initial pull request, suggestions and conversation!
+
+## 4.2.0+1 - 18th November 2024
+
+- Due to an admin error, 4.2.0+1 was meant to only contain documentation updates but instead was published with a WIP rewrite at [this git commit](https://github.com/tomalabaster/flutter_app_lock/tree/8a767af95823ca21e43184bc3544ac37ebfe89aa)
+
+## 4.2.0 - 18th November 2024
+
+- Exact same code as 4.2.0+2 above just without all of the documentation updates
 
 ## 4.1.1+1 - 30th December 2023
 
