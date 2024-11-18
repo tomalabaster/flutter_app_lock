@@ -78,6 +78,8 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
   late bool _enabled;
   late bool _inactive;
 
+  late Duration _backgroundLockLatency;
+
   Timer? _backgroundLockLatencyTimer;
 
   Object? _launchArg;
@@ -94,6 +96,8 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
     _locked = widget._initiallyEnabled;
     _enabled = widget._initiallyEnabled;
     _inactive = false;
+
+    _backgroundLockLatency = widget._initialBackgroundLockLatency;
   }
 
   @override
@@ -107,7 +111,7 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
     if (state == AppLifecycleState.hidden && !_locked) {
       _backgroundLockLatencyTimer?.cancel();
       _backgroundLockLatencyTimer =
-          Timer(widget._initialBackgroundLockLatency, () => showLockScreen());
+          Timer(_backgroundLockLatency, () => showLockScreen());
     }
 
     if (state == AppLifecycleState.resumed) {
@@ -219,6 +223,10 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
     return _didUnlockCompleter!.future;
   }
+
+  /// Change the background lock latency after `AppLock` has been created.
+  void setBackgroundLockLatency(Duration backgroundLockLatency) =>
+      _backgroundLockLatency = backgroundLockLatency;
 
   /// An argument that is passed to [didUnlock] for the first time after showing
   /// [lockScreen] (or preferably the [Widget] returned from [lockScreenBuilder]) on launch.
