@@ -70,6 +70,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               },
             ),
+            ElevatedButton(
+              key: const Key('SetBackgroundLockLatency'),
+              child: const Text('Changing background lock latency'),
+              onPressed: () => AppLock.of(context)!
+                  .setBackgroundLockLatency(const Duration(seconds: 5)),
+            ),
           ],
         ),
       ),

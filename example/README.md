@@ -25,24 +25,29 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: <Widget>[
           ElevatedButton(
-            child: Text('Set app lock enabled'),
-            onPressed: () => AppLock.of(context).enable(),
+            child: const Text('Set app lock enabled'),
+            onPressed: () => AppLock.of(context)!.enable(),
           ),
           ElevatedButton(
-            child: Text('Set app lock disabled'),
-            onPressed: () => AppLock.of(context).disable(),
+            child: const Text('Set app lock disabled'),
+            onPressed: () => AppLock.of(context)!.disable(),
           ),
           ElevatedButton(
-            child: Text('Manually show lock screen'),
-            onPressed: () => AppLock.of(context).showLockScreen(),
+            child: const Text('Manually show lock screen'),
+            onPressed: () => AppLock.of(context)!.showLockScreen(),
           ),
           ElevatedButton(
-            child: Text('Manually show lock screen (awaiting)'),
+            child: const Text('Manually show lock screen (awaiting)'),
             onPressed: () async {
-              await AppLock.of(context).showLockScreen();
+              await AppLock.of(context)!.showLockScreen();
 
               print('Did unlock!');
             },
+          ),
+          ElevatedButton(
+            child: const Text('Changing background lock latency'),
+            onPressed: () => AppLock.of(context)!
+                .setBackgroundLockLatency(const Duration(seconds: 5)),
           ),
         ],
       ),
