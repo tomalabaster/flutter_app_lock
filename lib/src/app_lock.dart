@@ -27,8 +27,8 @@ class AppLock extends StatefulWidget {
   final Widget? lockScreen;
   final WidgetBuilder? lockScreenBuilder;
   final WidgetBuilder? inactiveBuilder;
-  final bool enabled;
-  final Duration backgroundLockLatency;
+  final bool _initiallyEnabled;
+  final Duration _initialBackgroundLockLatency;
 
   const AppLock({
     super.key,
@@ -38,12 +38,32 @@ class AppLock extends StatefulWidget {
     this.lockScreen,
     this.lockScreenBuilder,
     this.inactiveBuilder,
-    this.enabled = true,
-    this.backgroundLockLatency = Duration.zero,
-  }) : assert(
+    @Deprecated(
+        'Use `initiallyEnabled` instead. `enabled` will be removed in version 5.0.0.')
+    bool? enabled,
+    bool? initiallyEnabled,
+    @Deprecated(
+        'Use `initialBackgroundLockLatency` instead. `backgroundLockLatency` will be removed in version 5.0.0.')
+    Duration? backgroundLockLatency,
+    Duration? initialBackgroundLockLatency,
+  })  : _initiallyEnabled = initiallyEnabled ?? enabled ?? true,
+        _initialBackgroundLockLatency = initialBackgroundLockLatency ??
+            backgroundLockLatency ??
+            Duration.zero,
+        assert(
             (lockScreen == null && lockScreenBuilder != null) ||
                 (lockScreen != null && lockScreenBuilder == null),
-            'Only 1 of either `lockScreenBuilder` or `lockScreen` should be set.');
+            'Only 1 of either `lockScreenBuilder` or `lockScreen` should be set.'),
+        assert(
+            (enabled == null && initiallyEnabled != null) ||
+                (enabled != null && initiallyEnabled == null),
+            'Only 1 of either `initiallyEnabled` or `enabled` should be set.'),
+        assert(
+            (backgroundLockLatency == null &&
+                    initialBackgroundLockLatency != null) ||
+                (backgroundLockLatency != null &&
+                    initialBackgroundLockLatency == null),
+            'Only 1 of either `initialBackgroundLockLatency` or `backgroundLockLatency` should be set.');
 
   static AppLockState? of(BuildContext context) =>
       context.findAncestorStateOfType<AppLockState>();
@@ -58,6 +78,8 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
   late bool _enabled;
   late bool _inactive;
 
+  late Duration _backgroundLockLatency;
+
   Timer? _backgroundLockLatencyTimer;
 
   Object? _launchArg;
@@ -70,10 +92,12 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
-    _didUnlockForAppLaunch = !widget.enabled;
-    _locked = widget.enabled;
-    _enabled = widget.enabled;
+    _didUnlockForAppLaunch = !widget._initiallyEnabled;
+    _locked = widget._initiallyEnabled;
+    _enabled = widget._initiallyEnabled;
     _inactive = false;
+
+    _backgroundLockLatency = widget._initialBackgroundLockLatency;
   }
 
   @override
@@ -87,7 +111,7 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
     if (state == AppLifecycleState.hidden && !_locked) {
       _backgroundLockLatencyTimer?.cancel();
       _backgroundLockLatencyTimer =
-          Timer(widget.backgroundLockLatency, () => showLockScreen());
+          Timer(_backgroundLockLatency, () => showLockScreen());
     }
 
     if (state == AppLifecycleState.resumed) {
@@ -199,6 +223,10 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
     return _didUnlockCompleter!.future;
   }
+
+  /// Change the background lock latency after `AppLock` has been created.
+  void setBackgroundLockLatency(Duration backgroundLockLatency) =>
+      _backgroundLockLatency = backgroundLockLatency;
 
   /// An argument that is passed to [didUnlock] for the first time after showing
   /// [lockScreen] (or preferably the [Widget] returned from [lockScreenBuilder]) on launch.

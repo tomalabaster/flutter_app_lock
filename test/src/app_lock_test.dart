@@ -34,8 +34,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 1),
-            enabled: true,
+            initialBackgroundLockLatency: const Duration(seconds: 1),
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -79,8 +79,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 1),
-            enabled: true,
+            initialBackgroundLockLatency: const Duration(seconds: 1),
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -142,8 +142,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 1),
-            enabled: true,
+            initialBackgroundLockLatency: const Duration(seconds: 1),
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -207,8 +207,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 1),
-            enabled: true,
+            initialBackgroundLockLatency: const Duration(seconds: 1),
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -276,8 +276,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 1),
-            enabled: true,
+            initialBackgroundLockLatency: const Duration(seconds: 1),
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -360,8 +360,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 2),
-            enabled: true,
+            initialBackgroundLockLatency: const Duration(seconds: 2),
+            initiallyEnabled: true,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -436,14 +436,124 @@ void main() {
       });
     });
 
+    group(
+        'When it is disabled and then enabled at runtime and the background lock latency is changed at runtime and the app transitions from inactive to hidden for longer than the new lock duration and back to inactive and resumed',
+        () {
+      late Widget sut;
+
+      final GlobalKey<AppLockState> appLockKey = GlobalKey();
+
+      setUp(() {
+        sut = MaterialApp(
+          builder: (context, child) => AppLock(
+            key: appLockKey,
+            initialBackgroundLockLatency: Duration.zero,
+            initiallyEnabled: false,
+            builder: (context, launchArg) => KeyedSubtree(
+              key: const Key('Unlocked'),
+              child: child!,
+            ),
+            lockScreenBuilder: (context) => const Scaffold(
+              key: Key('LockScreen'),
+            ),
+            inactiveBuilder: (context) => const Scaffold(
+              key: Key('InactiveScreen'),
+            ),
+          ),
+          home: const Scaffold(),
+        );
+      });
+
+      testWidgets(
+          'The lock screen should be shown if inactive for longer than the new background lock latency',
+          (widgetTester) async {
+        addTearDown(() {
+          widgetTester.binding
+              .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+        });
+
+        await widgetTester.pumpWidget(sut);
+
+        enableAppLockAfterLaunch(widgetTester);
+
+        appLockKey.currentState!
+            .setBackgroundLockLatency(const Duration(seconds: 5));
+
+        await setAppLifecycleToInactive(widgetTester);
+        await setAppLifecycleToHidden(widgetTester);
+
+        await widgetTester.pumpAndSettle(const Duration(seconds: 6));
+
+        await setAppLifecycleToInactive(widgetTester);
+        await setAppLifecycleToResumed(widgetTester);
+
+        expect(find.byKey(const Key('LockScreen')), findsOneWidget);
+      });
+    });
+
+    group(
+        'When it is disabled and then enabled at runtime and the background lock latency is changed at runtime and the app transitions from inactive to hidden for less than the new lock duration and back to inactive and resumed',
+        () {
+      late Widget sut;
+
+      final GlobalKey<AppLockState> appLockKey = GlobalKey();
+
+      setUp(() {
+        sut = MaterialApp(
+          builder: (context, child) => AppLock(
+            key: appLockKey,
+            initialBackgroundLockLatency: Duration.zero,
+            initiallyEnabled: false,
+            builder: (context, launchArg) => KeyedSubtree(
+              key: const Key('Unlocked'),
+              child: child!,
+            ),
+            lockScreenBuilder: (context) => const Scaffold(
+              key: Key('LockScreen'),
+            ),
+            inactiveBuilder: (context) => const Scaffold(
+              key: Key('InactiveScreen'),
+            ),
+          ),
+          home: const Scaffold(),
+        );
+      });
+
+      testWidgets(
+          'The lock screen should not be shown if inactive for less than the new background lock latency',
+          (widgetTester) async {
+        addTearDown(() {
+          widgetTester.binding
+              .handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+        });
+
+        await widgetTester.pumpWidget(sut);
+
+        enableAppLockAfterLaunch(widgetTester);
+
+        appLockKey.currentState!
+            .setBackgroundLockLatency(const Duration(seconds: 5));
+
+        await setAppLifecycleToInactive(widgetTester);
+        await setAppLifecycleToHidden(widgetTester);
+
+        await widgetTester.pumpAndSettle(const Duration(seconds: 2));
+
+        await setAppLifecycleToInactive(widgetTester);
+        await setAppLifecycleToResumed(widgetTester);
+
+        expect(find.byKey(const Key('LockScreen')), findsNothing);
+      });
+    });
+
     group('When it is disabled', () {
       late Widget sut;
 
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 1),
-            enabled: false,
+            initialBackgroundLockLatency: const Duration(seconds: 1),
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -487,8 +597,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 1),
-            enabled: false,
+            initialBackgroundLockLatency: const Duration(seconds: 1),
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -556,8 +666,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 1),
-            enabled: false,
+            initialBackgroundLockLatency: const Duration(seconds: 1),
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -627,8 +737,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 1),
-            enabled: false,
+            initialBackgroundLockLatency: const Duration(seconds: 1),
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -702,8 +812,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 1),
-            enabled: false,
+            initialBackgroundLockLatency: const Duration(seconds: 1),
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
@@ -792,8 +902,8 @@ void main() {
       setUp(() {
         sut = MaterialApp(
           builder: (context, child) => AppLock(
-            backgroundLockLatency: const Duration(seconds: 2),
-            enabled: false,
+            initialBackgroundLockLatency: const Duration(seconds: 2),
+            initiallyEnabled: false,
             builder: (context, launchArg) => KeyedSubtree(
               key: const Key('Unlocked'),
               child: child!,
