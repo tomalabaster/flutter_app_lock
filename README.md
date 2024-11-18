@@ -80,12 +80,12 @@ MaterialApp(
   builder: (context, child) => AppLock(
     builder: (context, arg) => child!,
     lockScreenBuilder: (context) => LockScreen(),
-    enabled: false,
+    initiallyEnabled: false,
   ),
 );
 ```
 
-The above will cause `child` (your `MaterialApp`'s `Navigator` or `Router`) to be built instantly and the widget returned from `lockScreenBuilder` will never be shown. The default for `enabled` is `true`.
+The above will cause `child` (your `MaterialApp`'s `Navigator` or `Router`) to be built instantly and the widget returned from `lockScreenBuilder` will never be shown. The default for `initiallyEnabled` is `true`.
 
 You can then enable the showing of the widget returned from `lockScreenBuilder` later on by doing:
 
@@ -161,12 +161,18 @@ MaterialApp(
   ...,
   builder: (context, child) => AppLock(
     ...,
-    backgroundLockLatency: const Duration(seconds: 30),
+    initialBackgroundLockLatency: const Duration(seconds: 30),
   ),
 );
 ```
 
 The above example allows the app to be in the background for up to 30 seconds without requiring the lock screen to be shown.
+
+It's also possible to change this at runtime using the method:
+
+```dart
+AppLock.of(context)!.setBackgroundLockLatency(const Duration(seconds: 5));
+```
 
 ## Inactive statuses (e.g. app switcher)
 

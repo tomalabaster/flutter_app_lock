@@ -7,8 +7,8 @@ void main() {
       data: args,
     ),
     lockScreenBuilder: (context) => LockScreen(),
-    enabled: false, // default is true, first app launches you probably want false
-    backgroundLockLatency: const Duration(seconds: 30), // default is 0 seconds (immediately)
+    initiallyEnabled: false, // default is true, first app launches you probably want false
+    initialBackgroundLockLatency: const Duration(seconds: 30), // default is 0 seconds (immediately)
     inactiveBuilder: (context) => InactiveScreen(),
   ));
 }
