@@ -1,3 +1,9 @@
+## 4.3.0 - 19th August 2025
+
+- `InactiveBehavior` enum to control whether the widget returned by [AppLock.inactiveBuilder] is shown only when [AppLock] is enabled or whether it should always been shown
+
+Thank you to [@yamashita-room-335](https://github.com/yamashita-room-335) for the interest in the inactive state!
+
 ## 4.2.0+2 - 18th November 2024
 
 **NOTE:** Use 4.2.0 or 4.2.0+2 only as 4.2.0+1 was mistakenly published from a WIP branch
