@@ -1,3 +1,9 @@
+## 5.0.0 - 1st June 2026
+
+- **Breaking change:** `AppLock` now uses an `Overlay` instead of a nested `Navigator` to show the lock and inactive screens. This fixes Hero animations ([#31](https://github.com/tomalabaster/flutter_app_lock/issues/31)) and Android back navigation after dialogs ([#35](https://github.com/tomalabaster/flutter_app_lock/issues/35)).
+- **Breaking change:** removed deprecated `lockScreen`, `enabled`, and `backgroundLockLatency` constructor parameters. Use `lockScreenBuilder`, `initiallyEnabled`, and `initialBackgroundLockLatency` instead.
+- Background lock is deferred until the app returns to the foreground when the latency timer fires while the app is still backgrounded.
+
 ## 4.3.0 - 19th August 2025
 
 - `InactiveBehavior` enum to control whether the widget returned by [AppLock.inactiveBuilder] is shown only when [AppLock] is enabled or whether it should always been shown
