@@ -35,8 +35,13 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            const Hero(
+              tag: 'CounterIntroText',
+              child: Material(
+                child: Text(
+                  'You have pushed the button this many times:',
+                ),
+              ),
             ),
             Text(
               '$_counter',
@@ -75,6 +80,63 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('Changing background lock latency'),
               onPressed: () => AppLock.of(context)!
                   .setBackgroundLockLatency(const Duration(seconds: 5)),
+            ),
+            ElevatedButton(
+              key: const Key('HeroTest'),
+              child: const Text('Hero test'),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(title: const Text('Hero detail')),
+                    body: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Hero(
+                            tag: 'CounterIntroText',
+                            child: Material(child: Text('Hero detail')),
+                          ),
+                          ElevatedButton(
+                            onPressed: () => Navigator.of(context).pop(),
+                            child: const Text('Pop'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ElevatedButton(
+              key: const Key('DialogBackTest'),
+              child: const Text('Dialog then back test'),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(title: const Text('Second screen')),
+                    body: Center(
+                      child: ElevatedButton(
+                        key: const Key('ShowDialog'),
+                        onPressed: () async {
+                          await showDialog<void>(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              content: const Text('Example dialog'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Close'),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        child: const Text('Show dialog'),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           ],
         ),

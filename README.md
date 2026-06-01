@@ -13,7 +13,7 @@ In your flutter project add the dependency:
 ```yaml
 dependencies:
   ...
-  flutter_app_lock: ^4.2.0+2
+  flutter_app_lock: ^5.0.0
 ```
 
 For help getting started with Flutter, view the online documentation.

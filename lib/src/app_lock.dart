@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_app_lock/src/no_animation_page.dart';
+import 'package:flutter/scheduler.dart';
 
 /// [InactiveBehavior] controls whether the widget returned by
 /// [AppLock.inactiveBuilder] is shown only when [AppLock] is enabled or
@@ -61,48 +61,21 @@ enum InactiveBehavior {
 /// [Duration] argument.
 class AppLock extends StatefulWidget {
   final Widget Function(BuildContext context, Object? launchArg) builder;
-  final Widget? lockScreen;
-  final WidgetBuilder? lockScreenBuilder;
+  final WidgetBuilder lockScreenBuilder;
   final WidgetBuilder? inactiveBuilder;
   final InactiveBehavior inactiveBehavior;
-  final bool _initiallyEnabled;
-  final Duration _initialBackgroundLockLatency;
+  final bool initiallyEnabled;
+  final Duration initialBackgroundLockLatency;
 
   const AppLock({
     super.key,
     required this.builder,
-    @Deprecated(
-        'Use `lockScreenBuilder` instead. `lockScreen` will be removed in version 5.0.0.')
-    this.lockScreen,
-    this.lockScreenBuilder,
+    required this.lockScreenBuilder,
     this.inactiveBuilder,
     this.inactiveBehavior = InactiveBehavior.showWhenEnabled,
-    @Deprecated(
-        'Use `initiallyEnabled` instead. `enabled` will be removed in version 5.0.0.')
-    bool? enabled,
-    bool? initiallyEnabled,
-    @Deprecated(
-        'Use `initialBackgroundLockLatency` instead. `backgroundLockLatency` will be removed in version 5.0.0.')
-    Duration? backgroundLockLatency,
-    Duration? initialBackgroundLockLatency,
-  })  : _initiallyEnabled = initiallyEnabled ?? enabled ?? true,
-        _initialBackgroundLockLatency = initialBackgroundLockLatency ??
-            backgroundLockLatency ??
-            Duration.zero,
-        assert(
-            (lockScreen == null && lockScreenBuilder != null) ||
-                (lockScreen != null && lockScreenBuilder == null),
-            'Only 1 of either `lockScreenBuilder` or `lockScreen` should be set.'),
-        assert(
-            (enabled == null && initiallyEnabled != null) ||
-                (enabled != null && initiallyEnabled == null),
-            'Only 1 of either `initiallyEnabled` or `enabled` should be set.'),
-        assert(
-            (backgroundLockLatency == null &&
-                    initialBackgroundLockLatency != null) ||
-                (backgroundLockLatency != null &&
-                    initialBackgroundLockLatency == null),
-            'Only 1 of either `initialBackgroundLockLatency` or `backgroundLockLatency` should be set.');
+    this.initiallyEnabled = true,
+    this.initialBackgroundLockLatency = Duration.zero,
+  });
 
   static AppLockState? of(BuildContext context) =>
       context.findAncestorStateOfType<AppLockState>();
@@ -112,6 +85,12 @@ class AppLock extends StatefulWidget {
 }
 
 class AppLockState extends State<AppLock> with WidgetsBindingObserver {
+  final GlobalKey<OverlayState> _overlayKey = GlobalKey();
+
+  late final OverlayEntry _appOverlayEntry;
+  late final OverlayEntry _lockScreenOverlayEntry;
+  OverlayEntry? _inactiveOverlayEntry;
+
   late bool _didUnlockForAppLaunch;
   late bool _locked;
   late bool _enabled;
@@ -120,10 +99,29 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
   late Duration _backgroundLockLatency;
 
   Timer? _backgroundLockLatencyTimer;
+  bool _pendingBackgroundLock = false;
+  bool _overlaySyncScheduled = false;
+  bool _isFirstBuild = true;
 
   Object? _launchArg;
 
-  Completer? _didUnlockCompleter;
+  Completer<void>? _didUnlockCompleter;
+
+  @visibleForTesting
+  OverlayEntry get appOverlayEntry => _appOverlayEntry;
+
+  @visibleForTesting
+  OverlayEntry get lockScreenOverlayEntry => _lockScreenOverlayEntry;
+
+  @visibleForTesting
+  OverlayEntry? get inactiveOverlayEntry => _inactiveOverlayEntry;
+
+  bool get _shouldShowInactive =>
+      _inactive &&
+      widget.inactiveBuilder != null &&
+      (widget.inactiveBehavior == InactiveBehavior.alwaysShow ||
+          (widget.inactiveBehavior == InactiveBehavior.showWhenEnabled &&
+              _enabled));
 
   @override
   void initState() {
@@ -131,12 +129,30 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
     WidgetsBinding.instance.addObserver(this);
 
-    _didUnlockForAppLaunch = !widget._initiallyEnabled;
-    _locked = widget._initiallyEnabled;
-    _enabled = widget._initiallyEnabled;
+    _appOverlayEntry = OverlayEntry(
+      maintainState: true,
+      builder: (context) => Offstage(
+        offstage: _locked || _shouldShowInactive,
+        child: widget.builder(context, _launchArg),
+      ),
+    );
+
+    _lockScreenOverlayEntry = OverlayEntry(
+      builder: (context) => _lockScreen,
+    );
+
+    if (widget.inactiveBuilder != null) {
+      _inactiveOverlayEntry = OverlayEntry(
+        builder: (context) => widget.inactiveBuilder!(context),
+      );
+    }
+
+    _didUnlockForAppLaunch = !widget.initiallyEnabled;
+    _locked = widget.initiallyEnabled;
+    _enabled = widget.initiallyEnabled;
     _inactive = false;
 
-    _backgroundLockLatency = widget._initialBackgroundLockLatency;
+    _backgroundLockLatency = widget.initialBackgroundLockLatency;
   }
 
   @override
@@ -147,19 +163,29 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
       _inactive = state == AppLifecycleState.inactive;
     });
 
+    if (state == AppLifecycleState.resumed) {
+      _backgroundLockLatencyTimer?.cancel();
+
+      if (_pendingBackgroundLock && _enabled && !_locked) {
+        _pendingBackgroundLock = false;
+        unawaited(showLockScreen());
+      }
+    }
+
     if (!_enabled) {
+      _scheduleSyncOverlays();
       return;
     }
 
     if (state == AppLifecycleState.hidden && !_locked) {
       _backgroundLockLatencyTimer?.cancel();
-      _backgroundLockLatencyTimer =
-          Timer(_backgroundLockLatency, () => showLockScreen());
+      _backgroundLockLatencyTimer = Timer(
+        _backgroundLockLatency,
+        _onBackgroundLockTimerFired,
+      );
     }
 
-    if (state == AppLifecycleState.resumed) {
-      _backgroundLockLatencyTimer?.cancel();
-    }
+    _scheduleSyncOverlays();
   }
 
   @override
@@ -173,50 +199,56 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return Navigator(
-      onPopPage: (route, result) => route.didPop(result),
-      pages: [
-        if (_didUnlockForAppLaunch)
-          MaterialPage(
-            key: const ValueKey('App'),
-            child: widget.builder(context, _launchArg),
-          ),
-        if (_locked)
-          MaterialPage(
-            key: const ValueKey('LockScreen'),
-            child: _lockScreen,
-          )
-        else if ((_inactive && widget.inactiveBuilder != null) &&
-            ((widget.inactiveBehavior == InactiveBehavior.alwaysShow) ||
-                ((widget.inactiveBehavior ==
-                        InactiveBehavior.showWhenEnabled) &&
-                    _enabled)))
-          NoAnimationPage(
-            key: const ValueKey('InactiveScreen'),
-            child: widget.inactiveBuilder!(context),
-          ),
-      ],
+    if (_isFirstBuild) {
+      _isFirstBuild = false;
+
+      return Overlay(
+        key: _overlayKey,
+        initialEntries: _overlayEntriesForCurrentState(),
+      );
+    }
+
+    _scheduleSyncOverlays();
+
+    return Overlay(
+      key: _overlayKey,
+      initialEntries: const [],
     );
+  }
+
+  List<OverlayEntry> _overlayEntriesForCurrentState() {
+    final entries = <OverlayEntry>[];
+
+    if (_didUnlockForAppLaunch) {
+      entries.add(_appOverlayEntry);
+    }
+
+    if (_locked) {
+      entries.add(_lockScreenOverlayEntry);
+    } else if (_shouldShowInactive && _inactiveOverlayEntry != null) {
+      entries.add(_inactiveOverlayEntry!);
+    }
+
+    return entries;
   }
 
   Widget get _lockScreen {
     return PopScope(
       canPop: false,
-      child: (widget.lockScreenBuilder?.call(context) ?? widget.lockScreen)!,
+      child: widget.lockScreenBuilder(context),
     );
   }
 
-  /// Causes `AppLock` to either pop the [AppLock.lockScreen] (or preferably
-  /// the [Widget] returned from [AppLock.lockScreenBuilder]) if the app is
-  /// already running or instantiates widget returned from the
-  /// [AppLock.builder] method if the app is cold launched.
+  /// Causes `AppLock` to either hide the [Widget] returned from
+  /// [AppLock.lockScreenBuilder] if the app is already running or instantiates
+  /// widget returned from the [AppLock.builder] method if the app is cold
+  /// launched.
   ///
   /// [launchArg] is an optional argument which will get passed to the
   /// [AppLock.builder] method when built. Use this when you want to inject
-  /// objects created from the [AppLock.lockScreen] (or preferably the [Widget]
-  /// returned from [AppLock.lockScreenBuilder]) in to the rest of your app so
-  /// you can better guarantee that some objects, services or databases are
-  /// already instantiated before using them.
+  /// objects created from the [Widget] returned from [AppLock.lockScreenBuilder]
+  /// in to the rest of your app so you can better guarantee that some objects,
+  /// services or databases are already instantiated before using them.
   void didUnlock([Object? launchArg]) {
     if (_didUnlockForAppLaunch) {
       _didUnlockOnAppPaused();
@@ -225,12 +257,13 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
     }
 
     _didUnlockCompleter?.complete();
+    _scheduleSyncOverlays();
   }
 
-  /// Makes sure that [AppLock] shows the [AppLock.lockScreen] (or preferably
-  /// the [Widget] returned from [AppLock.lockScreenBuilder]) on subsequent app
-  /// pauses if [enabled] is true of makes sure it isn't shown on subsequent
-  /// app pauses if [enabled] is false.
+  /// Makes sure that [AppLock] shows the [Widget] returned from
+  /// [AppLock.lockScreenBuilder] on subsequent app pauses if [enabled] is true
+  /// of makes sure it isn't shown on subsequent app pauses if [enabled] is
+  /// false.
   ///
   /// This is a convenience method for calling the [enable] or [disable] method
   /// based on [enabled].
@@ -242,35 +275,40 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
     }
   }
 
-  /// Makes sure that [AppLock] shows the [lockScreen] (or preferably the
-  /// [Widget] returned from [lockScreenBuilder]) on subsequent app pauses.
+  /// Makes sure that [AppLock] shows the [Widget] returned from
+  /// [lockScreenBuilder] on subsequent app pauses.
   void enable() {
     setState(() {
       _enabled = true;
     });
+
+    _scheduleSyncOverlays();
   }
 
-  /// Makes sure that [AppLock] doesn't show the [AppLock.lockScreen] (or
-  /// preferably the [Widget] returned from [AppLock.lockScreenBuilder]) on
-  /// subsequent app pauses.
+  /// Makes sure that [AppLock] doesn't show the [Widget] returned from
+  /// [AppLock.lockScreenBuilder] on subsequent app pauses.
   void disable() {
     setState(() {
       _enabled = false;
     });
+
+    _scheduleSyncOverlays();
   }
 
-  /// Manually show the [AppLock.lockScreen] (or preferably the [Widget]
-  /// returned from [AppLock.lockScreenBuilder]).
+  /// Manually show the [Widget] returned from [AppLock.lockScreenBuilder].
   Future<void> showLockScreen() async {
     if (_locked && _didUnlockCompleter != null) {
       return _didUnlockCompleter!.future;
     }
 
-    _didUnlockCompleter = Completer();
+    _didUnlockCompleter = Completer<void>();
 
     setState(() {
       _locked = true;
+      _pendingBackgroundLock = false;
     });
+
+    _scheduleSyncOverlays();
 
     return _didUnlockCompleter!.future;
   }
@@ -280,9 +318,88 @@ class AppLockState extends State<AppLock> with WidgetsBindingObserver {
       _backgroundLockLatency = backgroundLockLatency;
 
   /// An argument that is passed to [didUnlock] for the first time after showing
-  /// [AppLock.lockScreen] (or preferably the [Widget] returned from
-  /// [AppLock.lockScreenBuilder]) on launch.
+  /// the [Widget] returned from [AppLock.lockScreenBuilder] on launch.
   Object? get launchArg => _launchArg;
+
+  void _onBackgroundLockTimerFired() {
+    if (!mounted || _locked || !_enabled) {
+      return;
+    }
+
+    if (SchedulerBinding.instance.lifecycleState == AppLifecycleState.resumed) {
+      unawaited(showLockScreen());
+      return;
+    }
+
+    _pendingBackgroundLock = true;
+  }
+
+  void _scheduleSyncOverlays() {
+    if (_overlaySyncScheduled) {
+      return;
+    }
+
+    _overlaySyncScheduled = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _overlaySyncScheduled = false;
+
+      if (!mounted) {
+        return;
+      }
+
+      _syncOverlays();
+    });
+  }
+
+  void _syncOverlays() {
+    final overlay = _overlayKey.currentState;
+    if (overlay == null) {
+      return;
+    }
+
+    if (_didUnlockForAppLaunch) {
+      if (!_appOverlayEntry.mounted) {
+        overlay.insert(_appOverlayEntry);
+      } else {
+        _appOverlayEntry.markNeedsBuild();
+      }
+    } else if (_appOverlayEntry.mounted) {
+      _appOverlayEntry.remove();
+    }
+
+    if (_locked) {
+      if (!_lockScreenOverlayEntry.mounted) {
+        overlay.insert(_lockScreenOverlayEntry);
+      }
+
+      if (_inactiveOverlayEntry?.mounted ?? false) {
+        _inactiveOverlayEntry!.remove();
+      }
+
+      if (_appOverlayEntry.mounted) {
+        _appOverlayEntry.markNeedsBuild();
+      }
+      return;
+    }
+
+    if (_lockScreenOverlayEntry.mounted) {
+      _lockScreenOverlayEntry.remove();
+    }
+
+    final inactiveOverlayEntry = _inactiveOverlayEntry;
+    if (_shouldShowInactive && inactiveOverlayEntry != null) {
+      if (!inactiveOverlayEntry.mounted) {
+        overlay.insert(inactiveOverlayEntry);
+      }
+    } else if (inactiveOverlayEntry?.mounted ?? false) {
+      inactiveOverlayEntry!.remove();
+    }
+
+    if (_appOverlayEntry.mounted) {
+      _appOverlayEntry.markNeedsBuild();
+    }
+  }
 
   void _didUnlockOnAppLaunch(Object? launchArg) {
     setState(() {
